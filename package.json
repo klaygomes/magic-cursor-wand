@@ -77,7 +77,8 @@
     "size": "size-limit",
     "release": "pnpm build && changeset publish",
     "lint:package": "publint",
-    "docs:config": "node --experimental-strip-types scripts/config-table.ts"
+    "docs:config": "node --experimental-strip-types scripts/config-table.ts",
+    "docs:integrity": "node --experimental-strip-types scripts/script-integrity.ts"
   },
   "peerDependencies": {
     "react": ">=18",

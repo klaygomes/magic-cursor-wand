@@ -9,8 +9,9 @@ Use this procedure to add the effects to a page without a bundler. The script bu
 
    <<< @/snippets/script-tag.html#attributes
 
-3. Open the page in a browser.
-4. Move the pointer on the page. Make sure that the effects follow the pointer.
+3. Keep the `integrity` and `crossorigin` attributes. The browser then refuses a file that is different from the published file.
+4. Open the page in a browser.
+5. Move the pointer on the page. Make sure that the effects follow the pointer.
 
 ## Attributes
 
@@ -25,6 +26,16 @@ Use this procedure to add the effects to a page without a bundler. The script bu
 If the script element has no `data-wand-*` attributes, the build does not start a wand. You can then use the global `MagicCursorWand`:
 
 <<< @/snippets/script-tag.html#global
+
+## Integrity
+
+Each example uses a fixed version and the `integrity` attribute. The release workflow writes the new version and the new hash after each release. To use a different version, get its hash with this command:
+
+```sh
+curl -s https://cdn.jsdelivr.net/npm/magic-cursor-wand@0.1.0/dist/magic-cursor-wand.iife.js | openssl dgst -sha384 -binary | openssl base64 -A
+```
+
+The settings panel loads Tweakpane with a dynamic import. A browser cannot examine the integrity of a dynamic import. To control this file, give the panel your own `load` function.
 
 ## Result
 

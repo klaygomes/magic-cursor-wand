@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: npm
     permissions:
+      actions: write
       contents: write
       pull-requests: write
       id-token: write
@@ -30,7 +31,8 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
-      - uses: changesets/action@v1
+      - id: changesets
+        uses: changesets/action@v1
         with:
           version: pnpm changeset version
           publish: pnpm release
@@ -40,3 +42,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: 'true'
+      - name: Pin the script tag examples to the new version
+        if: steps.changesets.outputs.published == true
+        run: |
+          pnpm docs:integrity
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "docs: pin the script tag examples to the new version"
+          git push
+          gh workflow run pages.yml --ref main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
