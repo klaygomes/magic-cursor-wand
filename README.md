@@ -114,7 +114,7 @@ Chrome and Edge 88, Firefox 85, Safari and Safari on iOS 14.5, and later version
 
 ## Contribute
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md). All prose in this project obeys ASD-STE100 Simplified Technical English.
+Read [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
