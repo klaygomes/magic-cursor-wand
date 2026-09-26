@@ -1,7 +1,26 @@
 {
   "name": "magic-cursor-wand",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Chalk, glitter and cloud pointer effects for the browser. Extensible effects and async configuration providers.",
+  "keywords": [
+    "cursor",
+    "pointer",
+    "effect",
+    "canvas",
+    "chalk",
+    "glitter",
+    "sparkle",
+    "animation",
+    "browser"
+  ],
+  "homepage": "https://klaygomes.github.io/magic-cursor-wand/",
+  "bugs": {
+    "url": "https://github.com/klaygomes/magic-cursor-wand/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/klaygomes/magic-cursor-wand.git"
+  },
   "license": "MIT",
   "author": "Cleiton Loiola <klaygomes@gmail.com>",
   "type": "module",
@@ -98,5 +117,8 @@
     "vite": "^8.3.1",
     "vitepress": "^1.6.4",
     "vitest": "^5.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
