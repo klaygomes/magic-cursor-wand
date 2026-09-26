@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>magic-cursor-wand script tag</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Script tag build</h1>
+      <p>This page loads <code>dist/magic-cursor-wand.iife.js</code>. The <code>data-wand-*</code> attributes of the script element start the wand. Run <code>pnpm build</code> before you open this page.</p>
+      <p>Push Alt+Shift+W to open the settings. The panel loads Tweakpane from the jsDelivr CDN.</p>
+      <nav>
+        <a href="./index.html">Overlay mode</a>
+        <a href="./container.html">Container mode</a>
+      </nav>
+    </main>
+    <script
+      src="./magic-cursor-wand.iife.js"
+      data-wand-storage-key="magic-cursor-wand-script-demo"
+      data-wand-cursor="glow"
+      data-wand-panel-hotkey="Alt+Shift+W"
+    ></script>
+  </body>
+</html>

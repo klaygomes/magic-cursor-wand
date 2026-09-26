@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "isolatedDeclarations": false,
+    "declaration": false,
+    "types": [],
+    "paths": {
+      "magic-cursor-wand": ["../src/index.ts"],
+      "magic-cursor-wand/providers": ["../src/providers/index.ts"],
+      "magic-cursor-wand/cursor": ["../src/cursor/index.ts"],
+      "magic-cursor-wand/panel": ["../src/panel/index.ts"]
+    }
+  },
+  "include": ["src"]
+}

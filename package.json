@@ -44,7 +44,7 @@
   "scripts": {
     "build": "tsdown",
     "dev": "vite examples",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.tooling.json",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.tooling.json && tsc --noEmit -p scripts && tsc --noEmit -p examples",
     "test": "vitest run",
     "test:node": "vitest run --project node",
     "test:browser": "vitest run --project browser",
@@ -53,11 +53,12 @@
     "lint:prose": "vale README.md CONTRIBUTING.md PLAN.md docs",
     "docs:api": "typedoc",
     "docs:dev": "vitepress dev docs",
-    "docs:build": "pnpm docs:api && vitepress build docs",
+    "docs:build": "pnpm docs:api && pnpm docs:config && vitepress build docs",
     "docs:snippets": "tsc --noEmit -p docs/snippets",
     "size": "size-limit",
     "release": "pnpm build && changeset publish",
-    "lint:package": "publint"
+    "lint:package": "publint",
+    "docs:config": "node --experimental-strip-types scripts/config-table.ts"
   },
   "peerDependencies": {
     "react": ">=18",
