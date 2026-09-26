@@ -5,6 +5,8 @@
     "includes": [
       "**",
       "!dist",
+      "!.claude",
+      "!.vitest",
       "!reference",
       "!**/*.svg",
       "!docs/.vitepress/cache",

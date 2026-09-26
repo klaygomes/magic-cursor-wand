@@ -13,6 +13,15 @@ export default defineConfig({
         },
       },
       {
+        optimizeDeps: {
+          include: [
+            'react',
+            'react-dom',
+            'react-dom/client',
+            '@testing-library/react',
+            'tweakpane',
+          ],
+        },
         test: {
           name: 'browser',
           include: [

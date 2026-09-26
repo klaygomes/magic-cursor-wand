@@ -10,3 +10,4 @@ docs/reference/api
 !.vale/styles/STE
 !.vale/styles/config
 __screenshots__/*.actual.png
+.vitest/
