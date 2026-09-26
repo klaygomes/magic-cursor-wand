@@ -1,0 +1,6 @@
+allowBuilds:
+  '@vvago/vale': true
+  esbuild: true
+minimumReleaseAgeExclude:
+  - '@types/node@26.6.3'
+  - '@vvago/vale@3.23.0'

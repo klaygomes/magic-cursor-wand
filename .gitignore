@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+.DS_Store
+*.log
+docs/.vitepress/cache
+docs/.vitepress/dist
+docs/reference/api
+.vale/styles/*
+!.vale/styles/STE
+!.vale/styles/config
+__screenshots__/*.actual.png

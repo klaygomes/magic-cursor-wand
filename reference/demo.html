@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Glitter Mouse Effect</title>
+    <!-- Tailwind CDN removed: it shipped a full JIT compiler for ~10 utility classes. Plain CSS below. -->
+    <style>
+        :root {
+            --board: #1d3329; /* Chalkboard green. Was #fff, which made the white chalk/glitter invisible. */
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--board);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+        canvas {
+            display: block;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            touch-action: none; /* Replaces the global touchmove preventDefault */
+            cursor: none;       /* the custom #mp-cursor is drawn instead */
+        }
+
+        /* ---------------- Custom cursor ---------------- */
+        #mp-cursor {
+            --ink: #ffffff;               /* arrow fill */
+            --panel: #0e1512;             /* arrow outline */
+            --chalk: #ffffff;             /* set from the chalk color */
+            --accent-rgb: 255, 255, 255;  /* chalk color as r, g, b for the glow */
+            --glow-size: 80px;            /* the three glow vars follow the Cursor Glow sliders */
+            --glow-opacity: 0.55;
+            --glow-press: 1.25;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 20;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            will-change: transform;
+        }
+        #mp-cursor.wake { opacity: 1; }
+        #mp-cursor svg {
+            position: absolute;
+            left: -3px;  /* puts the arrow tip (3, 2) exactly on the pointer */
+            top: -2px;
+            overflow: visible;
+            transform-origin: 3px 2px;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
+            transition: transform 0.15s ease;
+        }
+        #mp-cursor path { transition: fill 0.15s ease; }
+        #mp-cursor .glow {
+            position: absolute;
+            left: calc(var(--glow-size) / -2);
+            top: calc(var(--glow-size) / -2);
+            width: var(--glow-size);
+            height: var(--glow-size);
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(var(--accent-rgb), 0.35) 0%, rgba(var(--accent-rgb), 0) 70%);
+            opacity: var(--glow-opacity);
+            transition: opacity 0.4s ease, transform 0.3s ease;
+        }
+        /* Resting (no movement for a moment): glow settles down */
+        #mp-cursor.idle .glow { opacity: calc(var(--glow-opacity) * 0.45); }
+        /* Pressed / drawing: arrow takes the chalk color and tightens */
+        #mp-cursor.pressed { --ink: var(--chalk); }
+        #mp-cursor.pressed svg { transform: scale(0.88); }
+        #mp-cursor.pressed .glow { opacity: min(1, var(--glow-opacity) * 1.7); transform: scale(var(--glow-press)); }
+        #controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            background: rgba(20, 20, 20, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            width: 300px;
+            max-width: calc(100vw - 40px);
+            box-sizing: border-box;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        #controls.hidden-panel {
+            transform: translateX(120%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #374151;
+        }
+        .panel-header h2 { margin: 0; font-size: 1.125rem; font-weight: 600; }
+        #closeControls {
+            background: none;
+            border: 0;
+            color: #9ca3af;
+            font-size: 1.25rem;
+            line-height: 1;
+            cursor: pointer;
+        }
+        #closeControls:hover { color: #fff; }
+        .section { margin-top: 8px; padding-top: 12px; border-top: 1px solid #374151; }
+        .section h3 { margin: 0 0 8px; font-size: 0.875rem; font-weight: 600; }
+        .control-group { margin-bottom: 15px; }
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            color: #aaa;
+        }
+        .control-group input[type="range"] {
+            width: 100%;
+            accent-color: #ffffff;
+            cursor: pointer;
+        }
+        .control-group input[type="color"] {
+            width: 100%;
+            height: 30px;
+            border: none;
+            border-radius: 4px;
+            padding: 0;
+            background: none;
+            cursor: pointer;
+        }
+        .control-group input[type="color"]:disabled { opacity: 0.4; cursor: not-allowed; }
+        .control-group label.check-row { align-items: center; cursor: pointer; color: #ddd; }
+        .check-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: #ffffff; cursor: pointer; }
+        .config-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .config-actions button {
+            padding: 8px 10px;
+            font: inherit;
+            font-size: 0.85rem;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .config-actions button:hover { background: rgba(255, 255, 255, 0.18); }
+        .config-actions button.primary { background: #fff; color: #111; border-color: #fff; }
+        .config-actions button.primary:hover { background: #e5e5e5; }
+        #toggleControls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 11;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: background 0.2s;
+        }
+        #toggleControls:hover { background: rgba(255, 255, 255, 0.2); }
+    </style>
+</head>
+<body>
+    <canvas id="glitterCanvas"></canvas>
+
+    <div id="mp-cursor" aria-hidden="true" style="transform: translate(-100px, -100px);">
+        <span class="glow"></span>
+        <svg width="26" height="26" viewBox="0 0 26 26"><path d="M3 2 L3 20.5 L7.9 16 L11.4 23.6 L14.9 22.1 L11.4 14.6 L18.2 14.6 Z" fill="var(--ink)" stroke="var(--panel)" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+    </div>
+
+    <button id="toggleControls">⚙️ Settings</button>
+    <div id="controls" class="hidden-panel">
+        <div class="panel-header">
+            <h2>Chalk &amp; Glitter Settings</h2>
+            <button id="closeControls" aria-label="Close settings">&times;</button>
+        </div>
+
+        <div class="control-group">
+            <label for="particleSize">Base Size <span id="valSize"></span></label>
+            <input type="range" id="particleSize" min="1" max="50" step="1" value="10">
+        </div>
+        <div class="control-group">
+            <label for="spawnCount">Density (Spawn Rate) <span id="valDensity"></span></label>
+            <input type="range" id="spawnCount" min="1" max="20" step="1" value="4">
+        </div>
+        <div class="control-group">
+            <label for="gravityVal">Gravity <span id="valGravity"></span></label>
+            <input type="range" id="gravityVal" min="-0.1" max="0.2" step="0.01" value="0.02">
+        </div>
+        <div class="control-group">
+            <label for="frictionVal">Friction (Floatiness) <span id="valFriction"></span></label>
+            <input type="range" id="frictionVal" min="0.8" max="1.0" step="0.01" value="0.98">
+        </div>
+        <div class="control-group">
+            <label for="fadeSpeed">Fade Speed <span id="valFade"></span></label>
+            <input type="range" id="fadeSpeed" min="0.001" max="0.05" step="0.001" value="0.015">
+        </div>
+        <div class="control-group">
+            <label for="twinkleIntensity">Twinkle Intensity <span id="valTwinkle"></span></label>
+            <input type="range" id="twinkleIntensity" min="1" max="20" step="1" value="6">
+        </div>
+        <div class="control-group">
+            <label for="glitterColorVal">Glitter Color</label>
+            <input type="color" id="glitterColorVal" value="#ffffff">
+        </div>
+        <div class="control-group">
+            <label class="check-row" for="glitterMatchChalk">
+                <span>Glitter matches chalk color</span>
+                <input type="checkbox" id="glitterMatchChalk" checked>
+            </label>
+        </div>
+
+        <div class="section"><h3>Chalk Settings</h3></div>
+        <div class="control-group">
+            <label for="chalkSizeVal">Chalk Size <span id="valChalkSize"></span></label>
+            <input type="range" id="chalkSizeVal" min="1" max="50" step="1" value="15">
+        </div>
+        <div class="control-group">
+            <label for="chalkLengthVal">Max Chalk Length (px) <span id="valChalkLength"></span></label>
+            <input type="range" id="chalkLengthVal" min="50" max="2000" step="10" value="600">
+        </div>
+        <div class="control-group">
+            <label for="chalkSmoothVal">Smoothing <span id="valChalkSmooth"></span></label>
+            <input type="range" id="chalkSmoothVal" min="0" max="0.95" step="0.05" value="0.75">
+        </div>
+        <div class="control-group">
+            <label for="chalkSoftVal">Softness (Feather Edge) <span id="valChalkSoft"></span></label>
+            <input type="range" id="chalkSoftVal" min="0" max="1" step="0.05" value="0.5">
+        </div>
+        <div class="control-group">
+            <label for="chalkTaperVal">Taper (Thin Tips) <span id="valChalkTaper"></span></label>
+            <input type="range" id="chalkTaperVal" min="0" max="1" step="0.05" value="0.6">
+        </div>
+        <div class="control-group">
+            <label for="chalkFadeVal">Chalk Vanish Speed <span id="valChalkFade"></span></label>
+            <input type="range" id="chalkFadeVal" min="0.001" max="0.05" step="0.001" value="0.005">
+        </div>
+        <div class="control-group">
+            <label for="chalkColorVal">Chalk Color</label>
+            <input type="color" id="chalkColorVal" value="#ffffff">
+        </div>
+
+        <div class="section"><h3>Cloud Hover Settings</h3></div>
+        <div class="control-group">
+            <label for="cloudSizeVal">Cloud Size <span id="valCloudSize"></span></label>
+            <input type="range" id="cloudSizeVal" min="10" max="150" step="1" value="40">
+        </div>
+        <div class="control-group">
+            <label for="cloudDensityVal">Cloud Density <span id="valCloudDensity"></span></label>
+            <input type="range" id="cloudDensityVal" min="0.1" max="1.0" step="0.05" value="0.4">
+        </div>
+        <div class="control-group">
+            <label for="cloudBounceVal">Cloud Bounce <span id="valCloudBounce"></span></label>
+            <input type="range" id="cloudBounceVal" min="0" max="150" step="1" value="60">
+        </div>
+        <div class="control-group">
+            <label for="cloudSpreadVal">Cloud Spawn Spread <span id="valCloudSpread"></span></label>
+            <input type="range" id="cloudSpreadVal" min="0" max="200" step="1" value="30">
+        </div>
+        <div class="control-group">
+            <label for="cloudFadeVal">Cloud Fade Speed <span id="valCloudFade"></span></label>
+            <input type="range" id="cloudFadeVal" min="0.001" max="0.05" step="0.001" value="0.015">
+        </div>
+
+        <div class="section"><h3>Cursor Glow</h3></div>
+        <div class="control-group">
+            <label for="glowSizeVal">Glow Size (px) <span id="valGlowSize"></span></label>
+            <input type="range" id="glowSizeVal" min="0" max="240" step="2" value="80">
+        </div>
+        <div class="control-group">
+            <label for="glowStrengthVal">Glow Strength <span id="valGlowStrength"></span></label>
+            <input type="range" id="glowStrengthVal" min="0" max="1" step="0.05" value="0.55">
+        </div>
+        <div class="control-group">
+            <label for="glowPressVal">Glow Boost While Drawing <span id="valGlowPress"></span></label>
+            <input type="range" id="glowPressVal" min="1" max="2.5" step="0.05" value="1.25">
+        </div>
+
+        <div class="section config-actions">
+            <button id="saveConfig" class="primary">Save</button>
+            <button id="resetConfig">Reset</button>
+            <button id="exportConfig">Export</button>
+            <button id="importConfig">Import</button>
+            <input type="file" id="importFile" accept="application/json,.json" hidden>
+        </div>
+    </div>
+
+    <script>
+    'use strict';
+
+    // ------------------------------------------------------------------
+    // Config
+    // ------------------------------------------------------------------
+    const config = {
+        baseSize: 10,
+        spawnRate: 4,
+        gravity: 0.02,
+        friction: 0.98,
+        decayRate: 0.015,
+        twinklePower: 6,
+        glitterColor: '#ffffff',
+        glitterMatchChalk: true, // glitter uses the chalk color
+        chalkSize: 15,
+        chalkMaxLength: 600, // px; older chalk dissolves while you keep drawing
+        chalkSmoothing: 0.75, // 0 = raw input, 0.95 = very steady, floaty line
+        chalkSoftness: 0.5,  // 0 = crisp edge, 1 = wide feathered edge
+        chalkTaper: 0.6,     // 0 = even width, 1 = long thin tips at both ends
+        chalkFadeRate: 0.005,
+        chalkColor: '#ffffff',
+        cloudSize: 40,
+        cloudDensity: 0.4,
+        cloudBounce: 60, // px range of the noise wobble (0 = no bounce)
+        cloudSpread: 30, // px area around the cursor where new clouds appear
+        cloudFadeRate: 0.015,
+        cursorGlowSize: 80,        // px diameter of the cursor glow (0 = off)
+        cursorGlowStrength: 0.55,  // opacity; dims to 45% when idle, x1.7 while drawing
+        cursorGlowPress: 1.25      // how much the glow grows while drawing
+    };
+
+    // Hard caps so fast scribbling can't grow the arrays without bound
+    const MAX_PARTICLES = 2000;
+    const MAX_CLOUDS = 300;
+    const MAX_DPR = 2;           // Sharp on retina without 9x fill cost on 3x phones
+    const MIN_VISIBLE_ALPHA = 0.01;
+    const POINT_SPACING = 2;     // px between interpolated stroke points
+
+    // ------------------------------------------------------------------
+    // Canvas (HiDPI aware)
+    // ------------------------------------------------------------------
+    const canvas = document.getElementById('glitterCanvas');
+    const ctx = canvas.getContext('2d');
+    let dpr = 1;
+
+    function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+        canvas.width = Math.round(window.innerWidth * dpr);
+        canvas.height = Math.round(window.innerHeight * dpr);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // ------------------------------------------------------------------
+    // Colour helpers (cached, not recomputed per particle per frame)
+    // ------------------------------------------------------------------
+    function hexToRgb(hex) {
+        const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return m
+            ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) }
+            : { r: 255, g: 255, b: 255 };
+    }
+    let chalkRgbStr = '255, 255, 255';
+    function updateChalkRgb() {
+        const c = hexToRgb(config.chalkColor);
+        chalkRgbStr = `${c.r}, ${c.g}, ${c.b}`;
+    }
+
+    // ------------------------------------------------------------------
+    // Pre-rendered sprites: gradients are built once, not every frame
+    // ------------------------------------------------------------------
+    const SPRITE = 128;
+    function makeCanvas(size) {
+        const c = document.createElement('canvas');
+        c.width = c.height = size;
+        return c;
+    }
+
+    const glowSprite = makeCanvas(SPRITE);
+    const glowCtx = glowSprite.getContext('2d');
+    const cloudSprite = makeCanvas(SPRITE);
+    const cloudCtx = cloudSprite.getContext('2d');
+
+    const glowImage = new Image();
+    let glowMaskReady = false;
+    glowImage.onload = () => { glowMaskReady = true; buildGlowSprite(); };
+    glowImage.onerror = () => { /* keep the gradient fallback sprite */ };
+    // No crossOrigin: we never read pixels back, and requesting CORS makes the
+    // load fail outright if the server doesn't send the header.
+    glowImage.src = 'https://www.gstatic.com/gemini/spark/glow_mask.svg';
+
+    function buildGlowSprite() {
+        const g = glowCtx;
+        const half = SPRITE / 2;
+        g.globalCompositeOperation = 'source-over';
+        g.clearRect(0, 0, SPRITE, SPRITE);
+
+        if (glowMaskReady) {
+            g.drawImage(glowImage, 0, 0, SPRITE, SPRITE);
+        } else {
+            const grad = g.createRadialGradient(half, half, 0, half, half, half);
+            grad.addColorStop(0, 'rgba(255,255,255,1)');
+            grad.addColorStop(0.2, 'rgba(255,255,255,0.8)');
+            grad.addColorStop(1, 'rgba(255,255,255,0)');
+            g.fillStyle = grad;
+            g.fillRect(0, 0, SPRITE, SPRITE);
+        }
+        // Tint while keeping the alpha shape
+        g.globalCompositeOperation = 'source-in';
+        g.fillStyle = config.glitterMatchChalk ? config.chalkColor : config.glitterColor;
+        g.fillRect(0, 0, SPRITE, SPRITE);
+        g.globalCompositeOperation = 'source-over';
+    }
+
+    function buildCloudSprite() {
+        const g = cloudCtx;
+        const half = SPRITE / 2;
+        g.clearRect(0, 0, SPRITE, SPRITE);
+        // Stored at full strength (better 8-bit precision); the 0.1 peak
+        // opacity is applied through globalAlpha at draw time.
+        const grad = g.createRadialGradient(half, half, 0, half, half, half);
+        grad.addColorStop(0, `rgba(${chalkRgbStr}, 1)`);
+        grad.addColorStop(0.5, `rgba(${chalkRgbStr}, 0.4)`);
+        grad.addColorStop(1, `rgba(${chalkRgbStr}, 0)`);
+        g.fillStyle = grad;
+        g.fillRect(0, 0, SPRITE, SPRITE);
+    }
+
+    // ------------------------------------------------------------------
+    // 1D value noise for the cloud wobble
+    // ------------------------------------------------------------------
+    const NOISE_SIZE = 512;
+    const noiseValues = new Float32Array(NOISE_SIZE);
+    for (let i = 0; i < NOISE_SIZE; i++) noiseValues[i] = Math.random();
+    function noise(x) {
+        const xi = Math.floor(x);
+        const xf = x - xi;
+        const r1 = noiseValues[xi % NOISE_SIZE];
+        const r2 = noiseValues[(xi + 1) % NOISE_SIZE];
+        const u = xf * xf * (3 - 2 * xf);
+        return r1 + u * (r2 - r1);
+    }
+
+    function easeInOutCirc(x) {
+        return x < 0.5
+            ? (1 - Math.sqrt(1 - (2 * x) ** 2)) / 2
+            : (Math.sqrt(1 - (-2 * x + 2) ** 2) + 1) / 2;
+    }
+
+    // ------------------------------------------------------------------
+    // State
+    // ------------------------------------------------------------------
+    const particles = [];
+    const clouds = [];
+    const lines = [];
+
+    let isDrawing = false;
+    let activePointerId = null;
+    let pointerX = -100;
+    let pointerY = -100;
+    let pointerActive = false;
+
+    // Per-frame constants (computed once per frame, shared by all objects)
+    const frame = { dt: 1, friction: 1, time: 0 };
+
+    // ------------------------------------------------------------------
+    // Glitter particle
+    // ------------------------------------------------------------------
+    class Particle {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.size = Math.random() * config.baseSize + config.baseSize * 0.3;
+            this.vx = (Math.random() - 0.5) * 4;
+            this.vy = (Math.random() - 0.5) * 4 - 1;
+            this.life = 1;
+            this.decay = Math.random() * (config.decayRate * 0.5) + config.decayRate * 0.5;
+            this.twinklePhase = Math.random() * Math.PI * 2;
+            this.twinkleSpeed = Math.random() * 0.2 + 0.05;
+            this.rotation = Math.random() * Math.PI * 2;
+            this.rotationSpeed = (Math.random() - 0.5) * 0.05;
+        }
+
+        update() {
+            const dt = frame.dt;
+            this.vy += config.gravity * dt;
+            this.vx *= frame.friction;
+            this.vy *= frame.friction;
+            this.x += this.vx * dt;
+            this.y += this.vy * dt;
+            this.life -= this.decay * dt;
+            this.twinklePhase += this.twinkleSpeed * dt;
+            this.rotation += this.rotationSpeed * dt;
+        }
+
+        draw() {
+            const twinkle = Math.abs(Math.sin(this.twinklePhase)) ** config.twinklePower;
+            const alpha = this.life * twinkle;
+            // High twinkle powers leave particles near-invisible much of the time: skip them
+            if (alpha < MIN_VISIBLE_ALPHA) return;
+
+            ctx.globalAlpha = alpha;
+            // One setTransform replaces save/translate/rotate/restore
+            const c = Math.cos(this.rotation) * dpr;
+            const s = Math.sin(this.rotation) * dpr;
+            ctx.setTransform(c, s, -s, c, this.x * dpr, this.y * dpr);
+            const half = this.size / 2;
+            ctx.drawImage(glowSprite, -half, -half, this.size, this.size);
+        }
+    }
+
+    function spawnParticles(x, y) {
+        const base = Math.floor(config.spawnRate);
+        let count = Math.floor(Math.random() * (base * 0.5)) + base;
+        count = Math.min(count, MAX_PARTICLES - particles.length);
+        for (let i = 0; i < count; i++) particles.push(new Particle(x, y));
+    }
+
+    // ------------------------------------------------------------------
+    // Hover cloud puff
+    // ------------------------------------------------------------------
+    class CloudParticle {
+        constructor(x, y) {
+            this.baseX = x + (Math.random() - 0.5) * config.cloudSpread;
+            this.baseY = y + (Math.random() - 0.5) * config.cloudSpread;
+            this.x = this.baseX;
+            this.y = this.baseY;
+            this.size = Math.random() * config.cloudSize + config.cloudSize;
+            this.life = 1;
+            this.decay = Math.random() * config.cloudFadeRate + config.cloudFadeRate * 0.33;
+            this.noiseOffsetX = Math.random() * 1000;
+            this.noiseOffsetY = Math.random() * 1000;
+            this.time = 0;
+        }
+
+        update() {
+            const dt = frame.dt;
+            this.life -= this.decay * dt;
+            this.time += 0.02 * dt;
+            this.baseY -= 0.4 * dt;
+            const bounce = config.cloudBounce;
+            this.x = this.baseX + (noise(this.noiseOffsetX + this.time) - 0.5) * bounce;
+            this.y = this.baseY + (noise(this.noiseOffsetY + this.time) - 0.5) * bounce;
+            this.size += 0.3 * dt;
+        }
+
+        draw() {
+            // Fast fade in, slow fade out
+            const alpha = this.life > 0.8 ? (1 - this.life) / 0.2 : this.life / 0.8;
+            const a = 0.1 * alpha;
+            if (a < 0.002) return;
+            ctx.globalAlpha = a;
+            const r = this.size;
+            ctx.drawImage(cloudSprite, this.x - r, this.y - r, r * 2, r * 2);
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Chalk lines
+    // Points are never spliced off the front (O(n) per frame); a `start`
+    // index advances instead.
+    // ------------------------------------------------------------------
+    // Each point stores `d`: cumulative distance along the stroke from its first point.
+    function newLine(x, y) {
+        return { points: [{ x, y, d: 0 }], start: 0, isDrawing: true, initialCount: 0, vanishTime: 0 };
+    }
+
+    // Keep an active stroke no longer than config.chalkMaxLength by
+    // dissolving its oldest end, with glitter where it disappears.
+    function enforceMaxLength(line) {
+        const pts = line.points;
+        const headD = pts[pts.length - 1].d;
+        const oldStart = line.start;
+        while (line.start < pts.length - 2 && headD - pts[line.start].d > config.chalkMaxLength) {
+            line.start++;
+        }
+        const trimmed = line.start - oldStart;
+        if (trimmed > 0) {
+            const p = pts[line.start - 1];
+            if (Math.random() < Math.min(1, trimmed * 0.15)) spawnParticles(p.x, p.y);
+        }
+        // Drop dead points now and then so a long continuous stroke doesn't grow the array forever
+        if (line.start > 1024 && line.start > pts.length / 2) {
+            line.points = pts.slice(line.start);
+            line.start = 0;
+        }
+    }
+
+    function advanceVanish(line) {
+        const remaining = line.points.length - line.start;
+        if (!line.initialCount) {
+            line.initialCount = Math.max(1, remaining);
+            line.vanishTime = 0;
+        }
+        const vanishSpeed = config.chalkFadeRate * 200;
+        line.vanishTime = Math.min(1, line.vanishTime + (vanishSpeed * frame.dt) / line.initialCount);
+
+        const eased = easeInOutCirc(line.vanishTime);
+        const target = Math.max(0, Math.floor(line.initialCount * (1 - eased)));
+        const toRemove = remaining - target;
+
+        if (toRemove > 0) {
+            const vanishPoint = line.points[line.start + toRemove - 1];
+            line.start += toRemove;
+            // Spray glitter where the chalk dissolves
+            if (vanishPoint && Math.random() < 0.6) spawnParticles(vanishPoint.x, vanishPoint.y);
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Feathered chalk rendering
+    // Each stroke is drawn as FEATHER_ALPHAS.length stacked layers, from a
+    // wide faint outer layer to a narrow bright core, which gives a soft
+    // edge (Softness knob). Every layer is ONE path made of overlapping
+    // circles, filled once, so the width can vary along the stroke
+    // (Taper knob) without dark beads where pieces overlap.
+    // ------------------------------------------------------------------
+    // 8 layers, outer → inner; alpha rises steeply toward the core so the
+    // edge fades out gradually without visible steps (core ≈ 0.8 opacity)
+    const FEATHER_ALPHAS = Array.from({ length: 8 }, (_, k) => 0.035 + 0.45 * (k / 7) ** 2.5);
+    const TAPER_MAX_PX = 160;   // taper length at Taper = 1
+    const TAPER_MIN_WIDTH = 0.12; // tip width as a fraction of full width
+
+    let bufX = new Float32Array(1024);
+    let bufY = new Float32Array(1024);
+    let bufW = new Float32Array(1024);
+    function ensureBuffers(n) {
+        if (bufX.length >= n) return;
+        const size = 2 ** Math.ceil(Math.log2(n));
+        bufX = new Float32Array(size);
+        bufY = new Float32Array(size);
+        bufW = new Float32Array(size);
+    }
+
+    function strokeLine(line) {
+        const pts = line.points;
+        const start = line.start;
+        const n = pts.length - start;
+        const t = line.isDrawing ? 0 : easeInOutCirc(line.vanishTime);
+        ensureBuffers(n);
+
+        // 1) Positions (with the aurora drift while vanishing)
+        const rise = -(t ** 1.5) * 40;
+        const waveAmp = t * 25;
+        const phase = frame.time * 0.002;
+        for (let i = 0; i < n; i++) {
+            const p = pts[start + i];
+            bufX[i] = t === 0 ? p.x : p.x + Math.sin(p.y * 0.02 + phase) * waveAmp;
+            bufY[i] = p.y + rise;
+        }
+
+        // 2) Width profile: thin at both ends, full in the middle
+        const d0 = pts[start].d;
+        const d1 = pts[pts.length - 1].d;
+        const taperLen = Math.min(config.chalkTaper * TAPER_MAX_PX, (d1 - d0) * 0.45);
+        for (let i = 0; i < n; i++) {
+            let f = 1;
+            if (taperLen > 0) {
+                const d = pts[start + i].d;
+                f = Math.min(1, (d - d0) / taperLen, (d1 - d) / taperLen);
+                f = f * (2 - f); // ease-out: quick swell from the tip
+            }
+            bufW[i] = TAPER_MIN_WIDTH + (1 - TAPER_MIN_WIDTH) * f;
+        }
+
+        // 3) Layers
+        const soft = config.chalkSoftness;
+        const outer = 1 + 2.5 * soft;           // outer layer width factor
+        const inner = 0.9 - 0.55 * soft;        // core width factor
+        const K = FEATHER_ALPHAS.length;
+        for (let k = 0; k < K; k++) {
+            const s = k / (K - 1);              // 0 = outer, 1 = core
+            const alpha = FEATHER_ALPHAS[k] * Math.max(0, 1 - t * (1 + 0.5 * s));
+            if (alpha < 0.003) continue;
+            const radius = (config.chalkSize / 2) * (outer + (inner - outer) * s) * (1 + t * 3 * (1 - s));
+
+            ctx.fillStyle = `rgba(${chalkRgbStr}, ${alpha})`;
+            ctx.beginPath();
+            let lx = -1e9, ly = -1e9;
+            for (let i = 0; i < n; i++) {
+                const r = radius * bufW[i];
+                const x = bufX[i], y = bufY[i];
+                // Skip circles that would sit almost on top of the last one
+                const gap = Math.max(1, r * 0.35);
+                const dx = x - lx, dy = y - ly;
+                if (i !== n - 1 && dx * dx + dy * dy < gap * gap) continue;
+                if (r < 0.25) continue;
+                ctx.moveTo(x + r, y);
+                ctx.arc(x, y, r, 0, Math.PI * 2, true); // same winding for all → clean union
+                lx = x; ly = y;
+            }
+            ctx.fill();
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Smoothing: the pen eases toward the pointer every frame instead of
+    // jumping to it, which irons out jitter (Smoothing knob, 0 = off).
+    // ------------------------------------------------------------------
+    let penX = 0, penY = 0;
+    function stepPen() {
+        const f = 1 - config.chalkSmoothing ** frame.dt;
+        const nx = penX + (pointerX - penX) * f;
+        const ny = penY + (pointerY - penY) * f;
+        if ((nx - penX) ** 2 + (ny - penY) ** 2 < 0.0625) return; // < 0.25px
+        penX = nx;
+        penY = ny;
+        addPoint(penX, penY);
+    }
+
+    function updateAndDrawLines() {
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        let n = 0;
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (!line.isDrawing) advanceVanish(line);
+            else enforceMaxLength(line);
+
+            const count = line.points.length - line.start;
+            if (count < 2) {
+                // Keep a just-started stroke; drop finished ones.
+                // (The original skipped 1-point lines before its removal
+                // check, so every click without a drag leaked a line.)
+                if (line.isDrawing) lines[n++] = line;
+                continue;
+            }
+            lines[n++] = line;
+            strokeLine(line);
+        }
+        lines.length = n;
+    }
+
+    function addPoint(x, y) {
+        const line = lines[lines.length - 1];
+        if (!line) return;
+        const last = line.points[line.points.length - 1];
+        const dx = x - last.x;
+        const dy = y - last.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist > POINT_SPACING) {
+            const steps = Math.ceil(dist / POINT_SPACING);
+            for (let i = 1; i <= steps; i++) {
+                const nx = last.x + (dx * i) / steps;
+                const ny = last.y + (dy * i) / steps;
+                line.points.push({ x: nx, y: ny, d: last.d + (dist * i) / steps });
+                if (Math.random() < 0.2) spawnParticles(nx, ny);
+            }
+        } else {
+            line.points.push({ x, y, d: last.d + dist });
+            spawnParticles(x, y);
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Main loop (frame-rate independent, idles when nothing is on screen)
+    // ------------------------------------------------------------------
+    let lastTime = performance.now();
+    let idleCleared = false;
+
+    function animate(now) {
+        requestAnimationFrame(animate);
+
+        // dt = 1 at 60 fps; 0.5 at 120 fps. Clamped after tab switches.
+        frame.dt = Math.min((now - lastTime) / (1000 / 60), 3);
+        frame.time = now;
+        frame.friction = config.friction ** frame.dt;
+        lastTime = now;
+
+        const idle = !pointerActive && !particles.length && !clouds.length && !lines.length;
+        if (idle) {
+            if (!idleCleared) {
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                idleCleared = true;
+            }
+            return;
+        }
+        idleCleared = false;
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        // Spawn clouds (probability scaled so density is the same at any fps)
+        if (pointerActive && clouds.length < MAX_CLOUDS) {
+            const p = 1 - (1 - config.cloudDensity) ** frame.dt;
+            if (Math.random() < p) clouds.push(new CloudParticle(pointerX, pointerY));
+        }
+
+        // Clouds (behind the chalk). In-place compaction instead of splice.
+        ctx.globalCompositeOperation = 'source-over';
+        let n = 0;
+        for (let i = 0; i < clouds.length; i++) {
+            const c = clouds[i];
+            c.update();
+            if (c.life > 0) { c.draw(); clouds[n++] = c; }
+        }
+        clouds.length = n;
+        ctx.globalAlpha = 1;
+
+        // Chalk
+        if (isDrawing && config.chalkSmoothing > 0) stepPen();
+        updateAndDrawLines();
+
+        // Glitter (additive)
+        ctx.globalCompositeOperation = 'lighter';
+        n = 0;
+        for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+            p.update();
+            if (p.life > 0) { p.draw(); particles[n++] = p; }
+        }
+        particles.length = n;
+
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    // ------------------------------------------------------------------
+    // Input: Pointer Events replace the separate mouse + touch handlers
+    // ------------------------------------------------------------------
+    function endStroke() {
+        isDrawing = false;
+        activePointerId = null;
+        cursorEl.classList.remove('pressed');
+        const line = lines[lines.length - 1];
+        if (line) line.isDrawing = false;
+    }
+
+    canvas.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        if (activePointerId !== null) return; // ignore extra fingers
+        activePointerId = e.pointerId;
+        canvas.setPointerCapture(e.pointerId); // keeps the stroke alive over the panel
+        isDrawing = true;
+        if (e.pointerType !== 'touch') cursorEl.classList.add('pressed');
+        pointerActive = true;
+        pointerX = penX = e.clientX;
+        pointerY = penY = e.clientY;
+        lines.push(newLine(e.clientX, e.clientY));
+        spawnParticles(e.clientX, e.clientY);
+    });
+
+    canvas.addEventListener('pointermove', (e) => {
+        if (activePointerId !== null && e.pointerId !== activePointerId) return;
+        pointerX = e.clientX;
+        pointerY = e.clientY;
+        pointerActive = true;
+        if (!isDrawing) return;
+        // With smoothing on, the pen follows the pointer in the animation loop
+        if (config.chalkSmoothing > 0) return;
+        // Coalesced events give the full-resolution path on fast strokes
+        const events = (e.getCoalescedEvents && e.getCoalescedEvents()) || [];
+        if (events.length) {
+            for (const ce of events) addPoint(ce.clientX, ce.clientY);
+        } else {
+            addPoint(e.clientX, e.clientY);
+        }
+    });
+
+    canvas.addEventListener('pointerup', (e) => {
+        if (e.pointerId !== activePointerId) return;
+        endStroke();
+        if (e.pointerType !== 'mouse') pointerActive = false;
+    });
+
+    canvas.addEventListener('pointercancel', (e) => {
+        if (e.pointerId !== activePointerId) return;
+        endStroke();
+        pointerActive = false;
+    });
+
+    canvas.addEventListener('pointerleave', () => {
+        if (isDrawing) endStroke();
+        pointerActive = false;
+    });
+
+    // ------------------------------------------------------------------
+    // Custom cursor (#mp-cursor): an arrow with a soft glow that follows
+    // the pointer. It takes the chalk color while the
+    // button is held, hides over the settings panel (normal cursor there)
+    // and on touch screens.
+    // ------------------------------------------------------------------
+    const cursorEl = document.getElementById('mp-cursor');
+    let cursorIdleTimer = 0;
+
+    function updateCursor() {
+        cursorEl.style.setProperty('--chalk', config.chalkColor);
+        cursorEl.style.setProperty('--accent-rgb', chalkRgbStr);
+        cursorEl.style.setProperty('--glow-size', config.cursorGlowSize + 'px');
+        cursorEl.style.setProperty('--glow-opacity', config.cursorGlowStrength);
+        cursorEl.style.setProperty('--glow-press', config.cursorGlowPress);
+    }
+
+    window.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'touch') { cursorEl.classList.remove('wake'); return; }
+        // transform only: the browser moves it on the compositor, no layout
+        cursorEl.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        // While drawing, pointer capture keeps the target on the canvas
+        const overUI = e.target.closest && e.target.closest('#controls, #toggleControls');
+        cursorEl.classList.toggle('wake', !overUI);
+        cursorEl.classList.remove('idle');
+        clearTimeout(cursorIdleTimer);
+        cursorIdleTimer = setTimeout(() => cursorEl.classList.add('idle'), 1500);
+    }, { passive: true });
+
+    window.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'touch') cursorEl.classList.remove('wake');
+    }, { passive: true });
+
+    const hideCursor = () => cursorEl.classList.remove('wake');
+    document.documentElement.addEventListener('mouseleave', hideCursor);
+    window.addEventListener('blur', hideCursor);
+
+    // ------------------------------------------------------------------
+    // UI
+    // ------------------------------------------------------------------
+    function setupUI() {
+        const controls = document.getElementById('controls');
+        const toggleBtn = document.getElementById('toggleControls');
+        const closeBtn = document.getElementById('closeControls');
+
+        toggleBtn.addEventListener('click', () => {
+            controls.classList.remove('hidden-panel');
+            toggleBtn.style.display = 'none';
+        });
+        closeBtn.addEventListener('click', () => {
+            controls.classList.add('hidden-panel');
+            toggleBtn.style.display = 'block';
+        });
+
+        function bindInput(id, key, displayId) {
+            const input = document.getElementById(id);
+            const display = document.getElementById(displayId);
+            config[key] = parseFloat(input.value);
+            display.textContent = input.value;
+            input.addEventListener('input', () => {
+                config[key] = parseFloat(input.value);
+                display.textContent = input.value;
+            });
+        }
+
+        bindInput('particleSize', 'baseSize', 'valSize');
+        bindInput('spawnCount', 'spawnRate', 'valDensity');
+        bindInput('gravityVal', 'gravity', 'valGravity');
+        bindInput('frictionVal', 'friction', 'valFriction');
+        bindInput('fadeSpeed', 'decayRate', 'valFade');
+        bindInput('twinkleIntensity', 'twinklePower', 'valTwinkle');
+        bindInput('chalkSizeVal', 'chalkSize', 'valChalkSize');
+        document.getElementById('chalkSizeVal').addEventListener('input', updateCursor);
+        bindInput('chalkLengthVal', 'chalkMaxLength', 'valChalkLength');
+        bindInput('chalkSmoothVal', 'chalkSmoothing', 'valChalkSmooth');
+        bindInput('chalkSoftVal', 'chalkSoftness', 'valChalkSoft');
+        bindInput('chalkTaperVal', 'chalkTaper', 'valChalkTaper');
+        bindInput('chalkFadeVal', 'chalkFadeRate', 'valChalkFade');
+        bindInput('cloudSizeVal', 'cloudSize', 'valCloudSize');
+        bindInput('cloudDensityVal', 'cloudDensity', 'valCloudDensity');
+        bindInput('cloudBounceVal', 'cloudBounce', 'valCloudBounce');
+        bindInput('cloudSpreadVal', 'cloudSpread', 'valCloudSpread');
+        bindInput('cloudFadeVal', 'cloudFadeRate', 'valCloudFade');
+        bindInput('glowSizeVal', 'cursorGlowSize', 'valGlowSize');
+        bindInput('glowStrengthVal', 'cursorGlowStrength', 'valGlowStrength');
+        bindInput('glowPressVal', 'cursorGlowPress', 'valGlowPress');
+        for (const id of ['glowSizeVal', 'glowStrengthVal', 'glowPressVal']) {
+            document.getElementById(id).addEventListener('input', updateCursor);
+        }
+
+        const glitterInput = document.getElementById('glitterColorVal');
+        const matchInput = document.getElementById('glitterMatchChalk');
+        const chalkInput = document.getElementById('chalkColorVal');
+
+        config.glitterColor = glitterInput.value;
+        config.chalkColor = chalkInput.value;
+        config.glitterMatchChalk = matchInput.checked;
+
+        // While matching, the glitter picker mirrors the chalk color and is disabled
+        function syncGlitterPicker() {
+            glitterInput.disabled = config.glitterMatchChalk;
+            glitterInput.value = config.glitterMatchChalk ? config.chalkColor : config.glitterColor;
+        }
+
+        glitterInput.addEventListener('input', () => {
+            config.glitterColor = glitterInput.value;
+            buildGlowSprite();
+        });
+
+        matchInput.addEventListener('change', () => {
+            config.glitterMatchChalk = matchInput.checked;
+            syncGlitterPicker();
+            buildGlowSprite();
+        });
+
+        chalkInput.addEventListener('input', () => {
+            config.chalkColor = chalkInput.value;
+            updateChalkRgb();
+            buildCloudSprite();
+            updateCursor();
+            if (config.glitterMatchChalk) {
+                syncGlitterPicker();
+                buildGlowSprite();
+            }
+        });
+
+        syncGlitterPicker();
+
+        // --------------------------------------------------------------
+        // Save / load settings
+        // --------------------------------------------------------------
+        const STORAGE_KEY = 'glitterChalkConfig.v1';
+        // [input id, config key, kind, value display id]
+        const CONTROLS = [
+            ['particleSize', 'baseSize', 'range', 'valSize'],
+            ['spawnCount', 'spawnRate', 'range', 'valDensity'],
+            ['gravityVal', 'gravity', 'range', 'valGravity'],
+            ['frictionVal', 'friction', 'range', 'valFriction'],
+            ['fadeSpeed', 'decayRate', 'range', 'valFade'],
+            ['twinkleIntensity', 'twinklePower', 'range', 'valTwinkle'],
+            ['chalkSizeVal', 'chalkSize', 'range', 'valChalkSize'],
+            ['chalkLengthVal', 'chalkMaxLength', 'range', 'valChalkLength'],
+            ['chalkSmoothVal', 'chalkSmoothing', 'range', 'valChalkSmooth'],
+            ['chalkSoftVal', 'chalkSoftness', 'range', 'valChalkSoft'],
+            ['chalkTaperVal', 'chalkTaper', 'range', 'valChalkTaper'],
+            ['chalkFadeVal', 'chalkFadeRate', 'range', 'valChalkFade'],
+            ['cloudSizeVal', 'cloudSize', 'range', 'valCloudSize'],
+            ['cloudDensityVal', 'cloudDensity', 'range', 'valCloudDensity'],
+            ['cloudBounceVal', 'cloudBounce', 'range', 'valCloudBounce'],
+            ['cloudSpreadVal', 'cloudSpread', 'range', 'valCloudSpread'],
+            ['cloudFadeVal', 'cloudFadeRate', 'range', 'valCloudFade'],
+            ['glowSizeVal', 'cursorGlowSize', 'range', 'valGlowSize'],
+            ['glowStrengthVal', 'cursorGlowStrength', 'range', 'valGlowStrength'],
+            ['glowPressVal', 'cursorGlowPress', 'range', 'valGlowPress'],
+            ['chalkColorVal', 'chalkColor', 'color'],
+            ['glitterColorVal', 'glitterColor', 'color'],
+            ['glitterMatchChalk', 'glitterMatchChalk', 'checkbox']
+        ];
+
+        function snapshot() {
+            const out = {};
+            for (const [, key] of CONTROLS) out[key] = config[key];
+            return out;
+        }
+        const DEFAULTS = snapshot(); // the values written in the HTML
+
+        // Apply a settings object; unknown keys and bad values are ignored,
+        // numbers are clamped to each slider's range.
+        function applyConfig(obj) {
+            if (!obj || typeof obj !== 'object') return false;
+            for (const [id, key, kind, displayId] of CONTROLS) {
+                if (!(key in obj)) continue;
+                const el = document.getElementById(id);
+                const v = obj[key];
+                if (kind === 'range') {
+                    const n = Number(v);
+                    if (!Number.isFinite(n)) continue;
+                    el.value = Math.min(+el.max, Math.max(+el.min, n));
+                    config[key] = parseFloat(el.value);
+                    document.getElementById(displayId).textContent = el.value;
+                } else if (kind === 'color') {
+                    if (typeof v !== 'string' || !/^#[0-9a-f]{6}$/i.test(v)) continue;
+                    el.value = v;
+                    config[key] = v.toLowerCase();
+                } else {
+                    el.checked = !!v;
+                    config[key] = !!v;
+                }
+            }
+            updateChalkRgb();
+            buildCloudSprite();
+            buildGlowSprite();
+            syncGlitterPicker();
+            updateCursor();
+            return true;
+        }
+
+        function flash(btn, text) {
+            const original = btn.dataset.label || (btn.dataset.label = btn.textContent);
+            btn.textContent = text;
+            clearTimeout(btn._t);
+            btn._t = setTimeout(() => { btn.textContent = original; }, 1400);
+        }
+
+        const saveBtn = document.getElementById('saveConfig');
+        const resetBtn = document.getElementById('resetConfig');
+        const exportBtn = document.getElementById('exportConfig');
+        const importBtn = document.getElementById('importConfig');
+        const importFile = document.getElementById('importFile');
+
+        saveBtn.addEventListener('click', () => {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot()));
+                flash(saveBtn, 'Saved ✓');
+            } catch {
+                flash(saveBtn, 'Blocked – use Export');
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            applyConfig(DEFAULTS);
+            try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
+            flash(resetBtn, 'Reset ✓');
+        });
+
+        exportBtn.addEventListener('click', () => {
+            const blob = new Blob([JSON.stringify(snapshot(), null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'glitter-chalk-config.json';
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        });
+
+        importBtn.addEventListener('click', () => importFile.click());
+        importFile.addEventListener('change', async () => {
+            const file = importFile.files[0];
+            importFile.value = '';
+            if (!file) return;
+            try {
+                applyConfig(JSON.parse(await file.text()));
+                flash(importBtn, 'Loaded ✓');
+            } catch {
+                flash(importBtn, 'Invalid file');
+            }
+        });
+
+        // Load previously saved settings, if any
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) applyConfig(JSON.parse(saved));
+        } catch { /* storage unavailable or corrupt: keep defaults */ }
+
+        // Panel starts open
+        controls.classList.remove('hidden-panel');
+        toggleBtn.style.display = 'none';
+    }
+
+    // ------------------------------------------------------------------
+    // Boot: start immediately instead of waiting for window.onload
+    // ------------------------------------------------------------------
+    setupUI();
+    updateChalkRgb();
+    buildGlowSprite();
+    buildCloudSprite();
+    updateCursor();
+    requestAnimationFrame(animate);
+    </script>
+</body>
+</html>
