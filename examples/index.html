@@ -3,19 +3,53 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>magic-cursor-wand demo</title>
+    <meta name="theme-color" content="#480f7b" />
+    <title>magic-cursor-wand</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Abel&family=Molengo&family=Rubik:wght@400;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <main>
-      <h1>magic-cursor-wand</h1>
-      <p>Move the pointer to see the clouds. Push the button and move the pointer to draw with chalk. Release the button to see the glitter.</p>
-      <p>Click the gear button, or push Alt+Shift+W, to open the settings. The page keeps the settings in localStorage.</p>
+    <header class="site-header">
       <nav>
-        <a href="./container.html">Container mode</a>
-        <a href="./script-tag.html">Script tag build</a>
+        <a class="brand" href="./index.html">magic-cursor-wand</a>
+        <a href="./index.html" aria-current="page">Overlay</a>
+        <a href="./container.html">Container</a>
+        <a href="./script-tag.html">Script tag</a>
+        <a href="../">Docs</a>
+        <a href="https://github.com/klaygomes/magic-cursor-wand">GitHub</a>
       </nav>
+    </header>
+    <div class="accent-strip"></div>
+    <main>
+      <section class="hero">
+        <h1>Chalk, glitter and clouds for your pointer.</h1>
+        <p class="lead">Move the pointer to make clouds. Push the button and move the pointer to draw with chalk. Release the button to see the chalk change into glitter.</p>
+        <div class="actions">
+          <button class="button" type="button" data-open-panel>Open the settings</button>
+          <a class="button ghost" href="../guide/getting-started">Get started</a>
+          <code class="install">npm i magic-cursor-wand</code>
+        </div>
+      </section>
+      <ol class="steps">
+        <li class="card">
+          <h2>Move</h2>
+          <p>Clouds follow the pointer and go up slowly.</p>
+        </li>
+        <li class="card">
+          <h2>Draw</h2>
+          <p>Push the button and move. The chalk line has soft edges and thin tips.</p>
+        </li>
+        <li class="card">
+          <h2>Release</h2>
+          <p>The line fades and changes into glitter. Push <code>Alt+Shift+W</code> to change the settings.</p>
+        </li>
+      </ol>
     </main>
+    <footer class="site-footer">
+      MIT license. Colors from <a href="https://www.estacouveflor.com/">Esta couve flor</a>.
+    </footer>
     <script type="module" src="./src/main.ts"></script>
   </body>
 </html>

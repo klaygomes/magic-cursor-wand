@@ -1,21 +1,38 @@
 <!doctype html>
-<html lang="en" class="page-container">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>magic-cursor-wand container mode</title>
+    <meta name="theme-color" content="#480f7b" />
+    <title>Container mode · magic-cursor-wand</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Abel&family=Molengo&family=Rubik:wght@400;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <main>
-      <h1>Container mode</h1>
-      <p>The wand draws only in the chalkboard. The rest of the page operates as usual.</p>
-      <div id="board" class="board"></div>
+    <header class="site-header">
       <nav>
-        <a href="./index.html">Overlay mode</a>
-        <a href="./script-tag.html">Script tag build</a>
+        <a class="brand" href="./index.html">magic-cursor-wand</a>
+        <a href="./index.html">Overlay</a>
+        <a href="./container.html" aria-current="page">Container</a>
+        <a href="./script-tag.html">Script tag</a>
+        <a href="../">Docs</a>
+        <a href="https://github.com/klaygomes/magic-cursor-wand">GitHub</a>
       </nav>
+    </header>
+    <div class="accent-strip"></div>
+    <main>
+      <section class="hero">
+        <h1>Container mode.</h1>
+        <p class="lead">The wand draws only in the board below. The rest of the page operates as usual.</p>
+      </section>
+      <div id="board" class="board"></div>
+      <p class="note">Push the button in the board and move the pointer to draw.</p>
     </main>
+    <footer class="site-footer">
+      MIT license. Colors from <a href="https://www.estacouveflor.com/">Esta couve flor</a>.
+    </footer>
     <script type="module" src="./src/container.ts"></script>
   </body>
 </html>

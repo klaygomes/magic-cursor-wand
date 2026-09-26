@@ -1,7 +1,43 @@
 :root {
-  --board: #1d3329;
-  --ink: #f4f1e8;
-  --muted: rgba(244, 241, 232, 0.65);
+  --purple-900: #25063c;
+  --purple-800: #480f7b;
+  --purple-600: #7e23b3;
+  --purple-300: #c084fc;
+  --purple-100: #f3e8ff;
+  --violet-50: #f5f3ff;
+  --paper: #fdfdfd;
+  --yellow: #fad30b;
+  --magenta: #b61a54;
+  --pink: #c63f75;
+
+  --font-display: "Rubik", system-ui, sans-serif;
+  --font-body: "Molengo", system-ui, sans-serif;
+  --font-label: "Abel", system-ui, sans-serif;
+  --font-code: "Courier New", Courier, monospace;
+
+  --tp-base-background-color: var(--purple-900);
+  --tp-base-shadow-color: rgba(0, 0, 0, 0.35);
+  --tp-base-font-family: var(--font-label);
+  --tp-container-background-color: rgba(126, 35, 179, 0.35);
+  --tp-container-background-color-hover: rgba(126, 35, 179, 0.5);
+  --tp-container-background-color-focus: rgba(126, 35, 179, 0.6);
+  --tp-container-background-color-active: rgba(126, 35, 179, 0.7);
+  --tp-container-foreground-color: var(--purple-100);
+  --tp-input-background-color: var(--purple-800);
+  --tp-input-background-color-hover: #5a1496;
+  --tp-input-background-color-focus: #5a1496;
+  --tp-input-background-color-active: var(--purple-600);
+  --tp-input-foreground-color: var(--purple-100);
+  --tp-label-foreground-color: var(--purple-300);
+  --tp-button-background-color: var(--purple-600);
+  --tp-button-background-color-hover: #9431cc;
+  --tp-button-background-color-focus: #9431cc;
+  --tp-button-background-color-active: var(--purple-800);
+  --tp-button-foreground-color: var(--purple-100);
+  --tp-groove-foreground-color: var(--purple-600);
+  --tp-monitor-background-color: var(--purple-800);
+  --tp-monitor-foreground-color: var(--purple-100);
+
   color-scheme: dark;
 }
 
@@ -13,48 +49,257 @@ html,
 body {
   margin: 0;
   min-height: 100%;
-  background-color: var(--board);
-  color: var(--ink);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
-main {
-  max-width: 720px;
-  padding: 48px 24px;
-}
-
-h1 {
-  margin: 0 0 12px;
-  font-size: 2rem;
-}
-
-p {
-  color: var(--muted);
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  color: var(--violet-50);
+  font-family: var(--font-body);
   line-height: 1.6;
+  background-color: var(--purple-800);
+  background-image:
+    radial-gradient(60rem 30rem at 85% -10%, rgba(198, 63, 117, 0.35), transparent 70%),
+    radial-gradient(50rem 30rem at -10% 10%, rgba(126, 35, 179, 0.6), transparent 70%),
+    linear-gradient(180deg, var(--purple-800) 0%, var(--purple-900) 100%);
+  background-attachment: fixed;
 }
 
 a {
-  color: var(--ink);
+  color: var(--yellow);
+  text-underline-offset: 3px;
 }
 
-nav {
+code {
+  font-family: var(--font-code);
+  color: var(--yellow);
+}
+
+.site-header {
+  background-color: var(--purple-800);
+}
+
+.site-header nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 24px;
+  align-items: center;
+  gap: 8px 24px;
+  width: min(100% - 32px, 1080px);
+  margin: 0 auto;
+  padding: 16px 0;
+}
+
+.brand {
+  margin-right: auto;
+  color: var(--yellow);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.site-header a:not(.brand) {
+  color: var(--purple-100);
+  font-family: var(--font-label);
+  font-size: 1.125rem;
+  text-decoration: none;
+}
+
+.site-header a:not(.brand):hover,
+.site-header a[aria-current="page"] {
+  color: var(--yellow);
+  text-decoration: underline;
+}
+
+.accent-strip {
+  height: 6px;
+  background: linear-gradient(90deg, var(--yellow) 66.66%, var(--pink) 0);
+}
+
+main {
+  flex: 1;
+  width: min(100% - 32px, 1080px);
+  margin: 0 auto;
+  padding: 72px 0 48px;
+}
+
+.hero h1 {
+  margin: 0;
+  max-width: 14ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 8vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  background: linear-gradient(100deg, var(--yellow) 20%, var(--pink) 70%, var(--purple-300));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero .lead {
+  max-width: 40rem;
+  margin: 24px 0 0;
+  color: var(--purple-100);
+  font-size: 1.25rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border: 2px solid var(--yellow);
+  border-radius: 999px;
+  color: var(--purple-900);
+  background-color: var(--yellow);
+  font: 800 1rem var(--font-display);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(250, 211, 11, 0.25);
+}
+
+.button.ghost {
+  color: var(--purple-100);
+  background-color: transparent;
+  border-color: rgba(243, 232, 255, 0.4);
+}
+
+.button.ghost:hover {
+  border-color: var(--purple-100);
+  box-shadow: none;
+}
+
+.install {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border: 1px solid rgba(250, 211, 11, 0.35);
+  border-radius: 12px;
+  background-color: rgba(37, 6, 60, 0.7);
+  font-family: var(--font-code);
+  font-size: 0.95rem;
+}
+
+.install::before {
+  content: "$";
+  color: var(--purple-300);
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-top: 72px;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.card {
+  position: relative;
+  padding: 24px 24px 24px 28px;
+  border-left: 8px solid var(--purple-600);
+  border-radius: 12px;
+  color: var(--purple-900);
+  background-color: var(--paper);
+  box-shadow:
+    0 4px 3px rgba(0, 0, 0, 0.07),
+    0 12px 32px rgba(37, 6, 60, 0.35);
+  counter-increment: step;
+}
+
+.card::before {
+  content: counter(step, decimal-leading-zero);
+  display: block;
+  margin-bottom: 8px;
+  color: var(--magenta);
+  font: 800 0.875rem var(--font-display);
+  letter-spacing: 0.08em;
+}
+
+.card h2,
+.card h3 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  background: linear-gradient(167deg, var(--purple-600), var(--purple-800));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card p {
+  margin: 0;
+}
+
+.card code {
+  color: var(--magenta);
 }
 
 .board {
-  width: min(100%, 640px);
-  height: 360px;
-  margin-top: 24px;
-  border: 8px solid #5b4630;
-  border-radius: 8px;
-  background-color: var(--board);
-  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.45);
+  width: 100%;
+  height: min(60vh, 460px);
+  margin-top: 40px;
+  border: 8px solid var(--purple-600);
+  border-radius: 20px;
+  background:
+    radial-gradient(40rem 20rem at 50% 0%, rgba(126, 35, 179, 0.35), transparent 70%),
+    var(--purple-900);
+  box-shadow:
+    inset 0 0 60px rgba(0, 0, 0, 0.55),
+    0 20px 40px rgba(37, 6, 60, 0.45);
 }
 
-.page-container,
-.page-container body {
-  background-color: #2a2f36;
+.note {
+  margin-top: 16px;
+  color: var(--purple-300);
+  font-family: var(--font-label);
+  font-size: 1rem;
+}
+
+.site-footer {
+  padding: 24px 16px 32px;
+  color: var(--purple-300);
+  font-family: var(--font-label);
+  text-align: center;
+}
+
+.site-footer a {
+  color: var(--purple-100);
+}
+
+/* The panel plugin places its box with inline styles. This demo moves it under the header. */
+body > div:has(> .tp-rotv) {
+  top: 88px !important;
+  border-radius: 10px;
+  box-shadow: 0 20px 40px rgba(37, 6, 60, 0.5);
+}
+
+@media (max-width: 640px) {
+  main {
+    padding-top: 48px;
+  }
+
+  .steps {
+    margin-top: 48px;
+  }
 }

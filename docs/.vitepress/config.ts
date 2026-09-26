@@ -59,6 +59,18 @@ export default defineConfig({
   description: 'Chalk, glitter and cloud effects that follow the pointer.',
   base: '/magic-cursor-wand/',
   lang: 'en-US',
+  head: [
+    ['meta', { name: 'theme-color', content: '#480f7b' }],
+    ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
+    ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
+    [
+      'link',
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Abel&family=Molengo&family=Rubik:wght@400;800&display=swap',
+      },
+    ],
+  ],
   cleanUrls: true,
   srcExclude: ['**/*.generated.md'],
   lastUpdated: true,
@@ -68,7 +80,11 @@ export default defineConfig({
       { text: 'Guide', link: '/guide/getting-started' },
       { text: 'How-to', link: '/how-to/use-script-tag' },
       { text: 'Reference', link: '/reference/' },
-      { text: 'Demo', link: 'https://klaygomes.github.io/magic-cursor-wand/examples/' },
+      {
+        text: 'Demo',
+        link: 'https://www.estacouveflor.com/magic-cursor-wand/examples/',
+        target: '_self',
+      },
     ],
     sidebar: {
       '/reference/api/': [{ text: 'API', items: apiSidebar() }],

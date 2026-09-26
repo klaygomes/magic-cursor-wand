@@ -4,6 +4,9 @@ layout: home
 hero:
   name: magic-cursor-wand
   text: Chalk, glitter and cloud effects for the pointer
+  image:
+    src: /wand.svg
+    alt: A chalk line with glitter that follows a pointer
   tagline: A small browser library. Add effects, plugins and configuration providers without changes to the core.
   actions:
     - theme: brand
@@ -11,7 +14,7 @@ hero:
       link: /guide/getting-started
     - theme: alt
       text: See the demo
-      link: https://klaygomes.github.io/magic-cursor-wand/examples/
+      link: https://www.estacouveflor.com/magic-cursor-wand/examples/
 
 features:
   - title: Three effects

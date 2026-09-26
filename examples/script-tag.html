@@ -3,23 +3,53 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>magic-cursor-wand script tag</title>
+    <meta name="theme-color" content="#480f7b" />
+    <title>Script tag build · magic-cursor-wand</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Abel&family=Molengo&family=Rubik:wght@400;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <main>
-      <h1>Script tag build</h1>
-      <p>This page loads <code>dist/magic-cursor-wand.iife.js</code>. The <code>data-wand-*</code> attributes of the script element start the wand. Run <code>pnpm build</code> before you open this page.</p>
-      <p>Push Alt+Shift+W to open the settings. The panel loads Tweakpane from the jsDelivr CDN.</p>
+    <header class="site-header">
       <nav>
-        <a href="./index.html">Overlay mode</a>
-        <a href="./container.html">Container mode</a>
+        <a class="brand" href="./index.html">magic-cursor-wand</a>
+        <a href="./index.html">Overlay</a>
+        <a href="./container.html">Container</a>
+        <a href="./script-tag.html" aria-current="page">Script tag</a>
+        <a href="../">Docs</a>
+        <a href="https://github.com/klaygomes/magic-cursor-wand">GitHub</a>
       </nav>
+    </header>
+    <div class="accent-strip"></div>
+    <main>
+      <section class="hero">
+        <h1>Script tag build.</h1>
+        <p class="lead">This page loads <code>magic-cursor-wand.iife.js</code> with one script element. The <code>data-wand-*</code> attributes start the wand. No bundler is necessary.</p>
+      </section>
+      <ol class="steps">
+        <li class="card">
+          <h2>Add the script</h2>
+          <p>Load the file from jsDelivr or unpkg.</p>
+        </li>
+        <li class="card">
+          <h2>Add the attributes</h2>
+          <p>Set <code>data-wand-config-url</code>, <code>data-wand-storage-key</code> and <code>data-wand-cursor</code>.</p>
+        </li>
+        <li class="card">
+          <h2>Open the settings</h2>
+          <p>Push <code>Alt+Shift+W</code>. The panel loads Tweakpane from the CDN.</p>
+        </li>
+      </ol>
     </main>
+    <footer class="site-footer">
+      MIT license. Colors from <a href="https://www.estacouveflor.com/">Esta couve flor</a>.
+    </footer>
     <script
       src="./magic-cursor-wand.iife.js"
-      data-wand-storage-key="magic-cursor-wand-script-demo"
-      data-wand-cursor="glow"
+      data-wand-config-url="data:application/json,%7B%22v%22%3A1%2C%22theme%22%3A%7B%22color%22%3A%22%23fad30b%22%7D%2C%22glitter%22%3A%7B%22color%22%3A%22%23c63f75%22%7D%2C%22cloud%22%3A%7B%22color%22%3A%22%23c084fc%22%7D%7D"
+      data-wand-storage-key="magic-cursor-wand-script-demo-v2"
+      data-wand-cursor="replace"
       data-wand-panel-hotkey="Alt+Shift+W"
     ></script>
   </body>
