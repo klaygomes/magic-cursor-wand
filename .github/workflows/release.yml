@@ -4,19 +4,23 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: write
-  pull-requests: write
-  id-token: write
-
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
+  check:
+    uses: ./.github/workflows/ci.yml
+
   release:
-    name: Version or publish
+    name: Open the release pull request or publish to npm
+    needs: check
     runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
@@ -26,13 +30,13 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
-      - name: Open the version pull request or publish to npm
-        uses: changesets/action@v1
+      - uses: changesets/action@v1
         with:
           version: pnpm changeset version
           publish: pnpm release
-          commit: 'chore: version packages'
-          title: 'chore: version packages'
+          commit: 'chore: release'
+          title: 'chore: release'
+          createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: 'true'

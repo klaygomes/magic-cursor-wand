@@ -262,8 +262,9 @@ Port each effect from the demo. Keep the demo values as the defaults.
 1. Use pnpm.
 2. GitHub Actions run these checks: typecheck, lint, prose lint, tests (Node and browser), build, publint, attw, size-limit and snippet compilation.
 3. The size limit for the core is 8 kB gzip.
-4. Changesets controls versions and the changelog. CI publishes with npm provenance.
+4. Changesets controls versions and the changelog. The release workflow opens the pull request `chore: release`. When it merges, the workflow publishes to npm with trusted publishing and provenance.
 5. GitHub Pages hosts the documentation site and the demo.
+6. A pull request from a collaborator publishes a preview package to pkg.pr.new.
 
 ## 12. Changes to this plan
 
@@ -278,3 +279,5 @@ Port each effect from the demo. Keep the demo values as the defaults.
 | 2026-09-26 | `PluginContext` has the function `reportError`. The panel sends the errors of Tweakpane loads and file imports to it, so the option `silent` also applies to plugins. |
 | 2026-09-26 | A tap makes a chalk dot only if `shouldDraw` accepts it. A tap on a link or a button makes only a `burst` event. |
 | 2026-09-26 | A pixel snapshot is a grid of the mean alpha of each 10 by 10 pixel cell, in `src/effects/__pixels__`. A test accepts a difference of at most 8 in each cell, so one snapshot is correct for Chromium, Firefox and WebKit. |
+| 2026-09-26 | The cloud pixel snapshot accepts a difference of at most 14, because the cloud effect stacks many layers with low alpha. |
+| 2026-09-26 | The workflows `release.yml` and `preview.yml` call `ci.yml`. A release or a preview starts only after CI passes. |

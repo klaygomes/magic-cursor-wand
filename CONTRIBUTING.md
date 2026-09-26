@@ -112,55 +112,22 @@ Examine your prose for these rules before you send the pull request:
 
 ## Release
 
-Changesets controls the versions and the changelog. The workflow `.github/workflows/release.yml` does the release. Only a maintainer can do these procedures.
+| Event | Result |
+|---|---|
+| A collaborator opens or updates a pull request | CI runs. Then a preview package goes to pkg.pr.new. The pull request gets a comment with the install command. |
+| A pull request with a changeset merges into `main` | CI runs. Then the release workflow opens or updates the pull request `chore: release`. |
+| The pull request `chore: release` merges into `main` | CI runs. Then the release workflow publishes the package to npm, adds the tag `vX.Y.Z` and makes a GitHub release. |
 
 ### Release a new version
 
-1. Merge the pull requests that have a changeset into `main`.
-2. Wait for the release workflow to finish.
-3. Open the pull request with the title `chore: version packages`.
-4. Examine the new version in `package.json`.
-5. Examine the new entries in `CHANGELOG.md`.
-6. Wait for CI to pass on the pull request.
-7. Merge the pull request.
-8. Wait for the release workflow to finish.
-9. Make sure that npm shows the new version:
-
-   ```sh
-   npm view magic-cursor-wand version
-   ```
-
-The release workflow opens one version pull request for all changesets. Each new changeset on `main` updates this pull request.
+1. Merge the pull requests that have a changeset.
+2. Examine the version and `CHANGELOG.md` in the pull request `chore: release`.
+3. Merge the pull request `chore: release`.
 
 ### Set trusted publishing
 
-The release workflow publishes with npm trusted publishing. It uses no npm token. Do this procedure one time for the package.
+Do this procedure one time. Replace `<code>` with the code from your authenticator:
 
-1. Make sure that your npm account has two-factor authentication.
-2. Make sure that your npm version is 11.15 or later.
-3. Run this command. Replace `<code>` with the code from your authenticator:
-
-   ```sh
-   npm trust github magic-cursor-wand --repo klaygomes/magic-cursor-wand --file release.yml --otp=<code>
-   ```
-
-### Publish from a computer
-
-Use this procedure only if the release workflow cannot publish.
-
-1. Merge the version pull request.
-2. Pull `main` to your computer.
-3. Do all checks.
-4. Build the package:
-
-   ```sh
-   pnpm build
-   ```
-
-5. Publish the package. Replace `<code>` with the code from your authenticator:
-
-   ```sh
-   npm publish --access public --otp=<code>
-   ```
-
-A package that you publish from a computer has no provenance.
+```sh
+npm trust github magic-cursor-wand --repo klaygomes/magic-cursor-wand --file release.yml --env npm --otp=<code>
+```
