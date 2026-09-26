@@ -9,7 +9,7 @@ export interface HttpProviderOptions {
   readonly headers?: Readonly<Record<string, string>>;
   /** The interval between two polls in milliseconds. Without this value, the provider does not poll. */
   readonly pollMs?: number;
-  /** The HTTP method for `save`. Without this value, the provider is read-only. */
+  /** The HTTP method for `save`. Without this value, the provider cannot save. */
   readonly save?: 'PUT' | 'POST' | false;
   /** The fetch function. The default is `globalThis.fetch`. */
   readonly fetch?: typeof fetch;

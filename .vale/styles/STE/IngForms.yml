@@ -6,7 +6,9 @@ ignorecase: true
 tokens:
   - \w{2,}ing
 exceptions:
+  - (?i)addBinding
   - (?i)anything
+  - (?i)binding
   - (?i)bring
   - (?i)ceiling
   - (?i)during
@@ -18,11 +20,13 @@ exceptions:
   - (?i)rendering
   - (?i)ring
   - (?i)sibling
+  - (?i)smoothing
   - (?i)something
   - (?i)spring
   - (?i)string
   - (?i)swing
   - (?i)thing
   - (?i)troubleshooting
+  - (?i)TweakpaneBinding
   - (?i)warning
   - (?i)wing

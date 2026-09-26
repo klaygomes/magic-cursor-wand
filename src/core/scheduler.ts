@@ -27,7 +27,7 @@ export interface ManualScheduler extends Scheduler {
    */
   advance(ms?: number): void;
   /**
-   * Runs a number of frames with the same interval.
+   * Runs the given count of frames with the same interval.
    *
    * @param count - The number of frames.
    * @param ms - The time between the frames. The default is one frame at 60 fps.

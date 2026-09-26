@@ -2,7 +2,7 @@
 
 Chalk, glitter and cloud effects that follow the pointer in a web browser.
 
-- The core has no dependencies. The size limit of the core is 8 kB with gzip.
+- The core has no dependencies. The engine and the store are 8 kB with gzip. The default effects add 6.5 kB.
 - You can add effects, plugins and configuration providers without changes to the core.
 - The wand gets its settings from `localStorage`, from an HTTP endpoint or from a server event stream.
 - The library sets styles with `element.style` only. Thus it operates with a strict Content Security Policy.

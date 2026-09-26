@@ -35,7 +35,7 @@ export interface CursorPluginOptions {
   readonly mode?: CursorMode;
   /** Use this function to render custom content in place of the arrow. */
   readonly render?: CursorRender;
-  /** The native cursor comes back over elements that match this selector. */
+  /** The native cursor shows again over elements that match this selector. */
   readonly ignoreSelector?: string;
 }
 

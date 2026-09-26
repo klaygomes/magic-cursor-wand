@@ -271,3 +271,6 @@ Port each effect from the demo. Keep the demo values as the defaults.
 |---|---|
 | 2026-09-26 | The panel plugin instance controls the panel (`panel.open()`), not `wand.panel`. This gives correct types without augmentation. |
 | 2026-09-26 | Tests use the `scheduler` and `random` options, not a `step` method on the wand. |
+| 2026-09-26 | The engine and the store are 8 kB gzip. The default effects add 6.5 kB. The size limit of the main entry with the default effects is 13 kB. The size limit of the React entry includes the core. |
+| 2026-09-26 | The `theme` section is in `src/config/theme.ts`. The engine and the panel use it. |
+| 2026-09-26 | The script tag build also accepts `data-wand-sse-url` and `data-wand-panel-hotkey`. |

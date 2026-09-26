@@ -9,7 +9,6 @@ const SOURCE_MODULES = [
   '../src/index.ts',
   '../src/effects/index.ts',
   '../src/cursor/index.ts',
-  '../src/core/theme.ts',
   '../src/config/theme.ts',
 ];
 
@@ -52,12 +51,8 @@ function sectionsFrom(exports: Record<string, unknown>): Section[] {
     const isFactory =
       typeof value === 'function' && value.length === 0 && /(Effect|Plugin|Section)$/.test(name);
     if (!isFactory) continue;
-    try {
-      const created: unknown = value();
-      if (isSection(created)) found.push(created);
-    } catch {
-      // A stub factory throws. The section is then absent from the table.
-    }
+    const created: unknown = value();
+    if (isSection(created)) found.push(created);
   }
   return found;
 }

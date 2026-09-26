@@ -41,7 +41,7 @@ export interface PanelPlugin extends Plugin<'panel', PanelSchema> {
   open(): Promise<void>;
   /** Hide the panel. */
   close(): void;
-  /** Open the panel if it is closed. Close the panel if it is open. */
+  /** Close the panel if it is open. Otherwise, open the panel. */
   toggle(): Promise<void>;
 }
 
