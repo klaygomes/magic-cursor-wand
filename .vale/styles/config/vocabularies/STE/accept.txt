@@ -44,3 +44,4 @@ VitePress
 Vitest
 (?i)wands?
 WebKit
+[Tt]rusted publishing
