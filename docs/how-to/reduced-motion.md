@@ -20,7 +20,7 @@ Use this procedure to control the motion of the effects. By default, the wand ob
 | `auto` | The wand follows `prefers-reduced-motion` and updates when the media query changes. |
 | `full` | The wand shows all motion. |
 | `reduced` | The wand shows reduced motion. |
-| `off` | The wand stops. |
+| `off` | The effects stop. The plugins continue to get the pointer events, thus the cursor plugin continues to show the pointer. |
 
 With reduced motion, each effect operates as this table shows:
 

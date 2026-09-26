@@ -185,6 +185,7 @@ export function createWandWith(
   };
 
   const live = (): boolean => !destroyed && running && readyGate && theme.motion !== 'off';
+  const effectsActive = (): boolean => live() && scheduler.now() >= startAt;
 
   const fail = (state: EffectState, error: unknown): void => {
     state.failures++;
@@ -301,7 +302,7 @@ export function createWandWith(
   };
 
   const emitPointer = (event: WandPointerEvent): void => {
-    for (const state of effectStates) {
+    for (const state of effectsActive() ? effectStates : []) {
       if (!drawable(state) || !state.section.pointer) continue;
       try {
         state.section.pointer(event);
@@ -445,7 +446,7 @@ export function createWandWith(
     surface,
     shouldDraw: options.shouldDraw ?? drawOnPress,
     ignoreSelector: options.ignoreSelector,
-    accept: () => live() && scheduler.now() >= startAt,
+    canDraw: effectsActive,
     emit: emitPointer,
     onError: (error) => report(effectError('shouldDraw', error)),
   });

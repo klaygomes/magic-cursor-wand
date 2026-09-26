@@ -52,7 +52,8 @@ export interface InputOptions {
   readonly surface: Surface;
   readonly shouldDraw: DrawPredicate;
   readonly ignoreSelector?: string | undefined;
-  readonly accept: () => boolean;
+  /** Tells if a press can start a stroke. The input sends the pointer events also when it returns false. */
+  readonly canDraw: () => boolean;
   readonly emit: (event: WandPointerEvent) => void;
   readonly onError: (error: unknown) => void;
 }
@@ -143,9 +144,9 @@ export function createInput(options: InputOptions): Input {
   };
 
   const onDown = (event: PointerEvent): void => {
-    if (!options.accept() || activeId !== undefined) return;
+    if (activeId !== undefined) return;
     const point = surface.toDocument(event.clientX, event.clientY);
-    const startsStroke = shouldDraw(event);
+    const startsStroke = options.canDraw() && shouldDraw(event);
     if (overlay && event.pointerType === 'touch') {
       tap = {
         id: event.pointerId,
@@ -172,7 +173,6 @@ export function createInput(options: InputOptions): Input {
   };
 
   const onMove = (event: PointerEvent): void => {
-    if (!options.accept()) return;
     if (overlay && event.pointerType === 'touch') return;
     if (activeId !== undefined && event.pointerId !== activeId) return;
     hover = true;
@@ -189,8 +189,8 @@ export function createInput(options: InputOptions): Input {
         event.clientX - candidate.clientX,
         event.clientY - candidate.clientY,
       );
-      if (moved > TAP_SLOP || !options.accept()) return;
-      drawing = candidate.drawing;
+      if (moved > TAP_SLOP) return;
+      drawing = candidate.drawing && options.canDraw();
       const point = { x: candidate.x, y: candidate.y };
       send('tap', point, event.pointerType, [point]);
       drawing = false;

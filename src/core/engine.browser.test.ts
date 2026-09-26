@@ -274,6 +274,43 @@ describe('frame loop', () => {
     expect(effect.frames[1]?.reducedMotion).toBe(false);
   });
 
+  it('sends pointer events to plugins but not to effects while motion is off or the wand is stopped', () => {
+    const scheduler = createManualScheduler();
+    const effect = fakeEffect('fx');
+    const phases: string[] = [];
+    const plugin: Plugin = {
+      name: 'widget',
+      schema: {},
+      setup(context) {
+        context.onPointer((event) => phases.push(`${event.phase}:${event.drawing}`));
+      },
+    };
+    const wand = track(
+      createTestWand({
+        effects: [effect],
+        plugins: [plugin],
+        scheduler,
+        config: { theme: { motion: 'off' } },
+      }),
+    );
+    pointer(window, 'pointermove', { clientX: 10, clientY: 20 });
+    pointer(window, 'pointerdown', { clientX: 10, clientY: 20, button: 0 });
+    pointer(window, 'pointerup', { clientX: 10, clientY: 20, button: 0 });
+    expect(phases).toEqual(['move:false', 'down:false', 'up:false']);
+    expect(effect.pointers).toHaveLength(0);
+    expect(document.documentElement.style.userSelect).toBe('');
+
+    wand.setConfig({ theme: { motion: 'full' } });
+    wand.stop();
+    pointer(window, 'pointermove', { clientX: 30, clientY: 40 });
+    expect(phases).toHaveLength(4);
+    expect(effect.pointers).toHaveLength(0);
+
+    wand.start();
+    pointer(window, 'pointermove', { clientX: 50, clientY: 60 });
+    expect(effect.pointers).toHaveLength(1);
+  });
+
   it('follows prefers-reduced-motion for motion auto and its changes', () => {
     const query = Object.assign(new EventTarget(), {
       matches: true,
