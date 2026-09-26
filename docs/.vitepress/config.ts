@@ -59,18 +59,7 @@ export default defineConfig({
   description: 'Chalk, glitter and cloud effects that follow the pointer.',
   base: '/magic-cursor-wand/',
   lang: 'en-US',
-  head: [
-    ['meta', { name: 'theme-color', content: '#480f7b' }],
-    ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
-    ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
-    [
-      'link',
-      {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Abel&family=Molengo&family=Rubik:wght@400;800&display=swap',
-      },
-    ],
-  ],
+  head: [['meta', { name: 'theme-color', content: '#480f7b' }]],
   cleanUrls: true,
   srcExclude: ['**/*.generated.md'],
   lastUpdated: true,

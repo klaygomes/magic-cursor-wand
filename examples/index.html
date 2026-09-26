@@ -4,15 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#480f7b" />
+    <meta name="description" content="Chalk, glitter and cloud effects that follow the pointer." />
     <title>magic-cursor-wand</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Abel&family=Molengo&family=Rubik:wght@400;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
     <header class="site-header">
-      <nav>
+      <nav aria-label="Main">
         <a class="brand" href="./index.html">magic-cursor-wand</a>
         <a href="./index.html" aria-current="page">Overlay</a>
         <a href="./container.html">Container</a>
@@ -20,35 +18,54 @@
         <a href="../">Docs</a>
         <a href="https://github.com/klaygomes/magic-cursor-wand">GitHub</a>
       </nav>
+      <div class="accent-strip"></div>
     </header>
-    <div class="accent-strip"></div>
     <main>
       <section class="hero">
-        <h1>Chalk, glitter and clouds for your pointer.</h1>
-        <p class="lead">Move the pointer to make clouds. Push the button and move the pointer to draw with chalk. Release the button to see the chalk change into glitter.</p>
-        <div class="actions">
-          <button class="button" type="button" data-open-panel>Open the settings</button>
-          <a class="button ghost" href="../guide/getting-started">Get started</a>
-          <code class="install">npm i magic-cursor-wand</code>
+        <div class="hero-copy" data-reveal>
+          <h1>A wand for <em>your pointer.</em></h1>
+          <p class="lead">Chalk strokes, glitter and soft clouds that follow the pointer. One small library with no dependencies.</p>
+          <div class="actions">
+            <button class="button" type="button" data-open-panel>Open settings</button>
+            <a class="button ghost" href="../guide/getting-started">Read the docs</a>
+          </div>
+        </div>
+        <figure class="slate" data-slate data-reveal>
+          <figcaption>Push the button and draw anywhere on this page.</figcaption>
+        </figure>
+      </section>
+
+      <section class="install" data-reveal aria-labelledby="install-title">
+        <h2 id="install-title">Two lines to start.</h2>
+        <div class="code-panel">
+          <pre id="install-code"><code><span class="prompt">npm i magic-cursor-wand</span>
+
+<span class="kw">import</span> { createWand } <span class="kw">from</span> <span class="str">'magic-cursor-wand'</span>;
+createWand();</code></pre>
+          <button class="copy" type="button" data-copy="install-code">Copy</button>
         </div>
       </section>
-      <ol class="steps">
-        <li class="card">
-          <h2>Move</h2>
-          <p>Clouds follow the pointer and go up slowly.</p>
-        </li>
-        <li class="card">
-          <h2>Draw</h2>
-          <p>Push the button and move. The chalk line has soft edges and thin tips.</p>
-        </li>
-        <li class="card">
-          <h2>Release</h2>
-          <p>The line fades and changes into glitter. Push <code>Alt+Shift+W</code> to change the settings.</p>
-        </li>
-      </ol>
+
+      <section class="features" aria-labelledby="features-title">
+        <h2 id="features-title" data-reveal>Change everything, keep the core.</h2>
+        <div class="bento">
+          <article class="cell cell-settings" data-reveal>
+            <h3>Every value is a setting.</h3>
+            <p>Chalk size, smoothing, taper, gravity, twinkle and cloud density. Push <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>W</kbd> and move the sliders while you draw.</p>
+          </article>
+          <article class="cell cell-providers" data-reveal>
+            <h3>Settings from anywhere.</h3>
+            <p>Read them from localStorage, an HTTP endpoint or a server event stream. Changes save automatically.</p>
+          </article>
+          <article class="cell cell-plugins" data-reveal>
+            <h3>Your own effects.</h3>
+            <p>Effects, plugins and providers are small objects. Add one without a change to the core.</p>
+          </article>
+        </div>
+      </section>
     </main>
     <footer class="site-footer">
-      MIT license. Colors from <a href="https://www.estacouveflor.com/">Esta couve flor</a>.
+      <p>MIT license. Colors and type from <a href="https://www.estacouveflor.com/">Esta couve flor</a>.</p>
     </footer>
     <script type="module" src="./src/main.ts"></script>
   </body>

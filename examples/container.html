@@ -4,15 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#480f7b" />
-    <title>Container mode · magic-cursor-wand</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Abel&family=Molengo&family=Rubik:wght@400;800&display=swap" rel="stylesheet" />
+    <meta name="description" content="The wand draws only inside one element." />
+    <title>Container mode | magic-cursor-wand</title>
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
     <header class="site-header">
-      <nav>
+      <nav aria-label="Main">
         <a class="brand" href="./index.html">magic-cursor-wand</a>
         <a href="./index.html">Overlay</a>
         <a href="./container.html" aria-current="page">Container</a>
@@ -20,18 +18,18 @@
         <a href="../">Docs</a>
         <a href="https://github.com/klaygomes/magic-cursor-wand">GitHub</a>
       </nav>
+      <div class="accent-strip"></div>
     </header>
-    <div class="accent-strip"></div>
     <main>
-      <section class="hero">
-        <h1>Container mode.</h1>
-        <p class="lead">The wand draws only in the board below. The rest of the page operates as usual.</p>
+      <section class="page-intro" data-reveal>
+        <h1>Container <em>mode.</em></h1>
+        <p class="lead">The wand draws only inside the board. The rest of the page works as usual.</p>
       </section>
-      <div id="board" class="board"></div>
-      <p class="note">Push the button in the board and move the pointer to draw.</p>
+      <div id="board" class="board" data-reveal></div>
+      <p class="note">Push the button inside the board and move the pointer.</p>
     </main>
     <footer class="site-footer">
-      MIT license. Colors from <a href="https://www.estacouveflor.com/">Esta couve flor</a>.
+      <p>MIT license. Colors and type from <a href="https://www.estacouveflor.com/">Esta couve flor</a>.</p>
     </footer>
     <script type="module" src="./src/container.ts"></script>
   </body>

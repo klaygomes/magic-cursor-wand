@@ -175,6 +175,15 @@ importers:
       '@changesets/cli':
         specifier: ^3.0.3
         version: 3.0.3
+      '@fontsource/abel':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/molengo':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/rubik':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@size-limit/preset-small-lib':
         specifier: ^14.0.1
         version: 14.0.1(size-limit@14.0.1)
@@ -644,6 +653,15 @@ packages:
     engines: {node: '>=12'}
     cpu: [x64]
     os: [win32]
+
+  '@fontsource/abel@5.3.0':
+    resolution: {integrity: sha512-SUkI0G+yaR+NvlTKNTcf1OOOph75JET6pL+P8JJn/7teunzy3DDUexzYR65p2UlK/Bk8cdIFrhnNkD4ldk5wTg==}
+
+  '@fontsource/molengo@5.3.0':
+    resolution: {integrity: sha512-aVUgGW7RN+HBJriiBOrOqKGhuB8350CmTl5UiBnNINJOvJZmdMcK3MhOvDb6yxJesCk/YFzuZ9kAwfJuNQfRZw==}
+
+  '@fontsource/rubik@5.3.0':
+    resolution: {integrity: sha512-Nks2mn7vlE1jZVHuVgoKU2Ejqjvd+GJzLRdraCjo1xc79oo7O6vJ8pcvSfmKPGX3/Ln7nt09XWFzPeu2jWf0xQ==}
 
   '@gerrit0/mini-shiki@3.23.0':
     resolution: {integrity: sha512-bEMORlG0cqdjVyCEuU0cDQbORWX+kYCeo0kV1lbxF5bt4r7SID2l9bqsxJEM0zndaxpOUT7riCyIVEuqq/Ynxg==}
@@ -2611,6 +2629,12 @@ snapshots:
 
   '@esbuild/win32-x64@0.21.5':
     optional: true
+
+  '@fontsource/abel@5.3.0': {}
+
+  '@fontsource/molengo@5.3.0': {}
+
+  '@fontsource/rubik@5.3.0': {}
 
   '@gerrit0/mini-shiki@3.23.0':
     dependencies:

@@ -2,9 +2,11 @@ import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { setTimeout as delay } from 'node:timers/promises';
 
-const FILES = ['../README.md', '../docs/snippets/script-tag.html'].map(
-  (path) => new URL(path, import.meta.url),
-);
+const FILES = [
+  '../README.md',
+  '../docs/snippets/script-tag.html',
+  '../examples/script-tag.html',
+].map((path) => new URL(path, import.meta.url));
 
 const SCRIPT_SOURCE =
   /(\s+)src="https:\/\/cdn\.jsdelivr\.net\/npm\/magic-cursor-wand(?:@[^/"]+)?\/dist\/magic-cursor-wand\.iife\.js"(?:\s+integrity="[^"]*")?(?:\s+crossorigin="[^"]*")?/g;
