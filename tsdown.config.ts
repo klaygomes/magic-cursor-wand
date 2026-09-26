@@ -26,6 +26,7 @@ export default defineConfig([
     entry: { 'magic-cursor-wand': 'src/iife.ts' },
     format: 'iife',
     globalName: 'MagicCursorWand',
+    external: ['tweakpane'],
     minify: true,
   },
 ]);

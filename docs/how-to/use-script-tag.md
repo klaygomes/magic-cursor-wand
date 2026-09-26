@@ -17,8 +17,10 @@ Use this procedure to add the effects to a page without a bundler. The script bu
 | Attribute | Result |
 |---|---|
 | `data-wand-config-url` | Adds an HTTP provider with this URL. |
+| `data-wand-sse-url` | Adds an SSE provider with this URL. |
 | `data-wand-storage-key` | Adds a localStorage provider with this key. |
-| `data-wand-cursor` | Adds the cursor plugin in this mode. |
+| `data-wand-cursor` | Adds the cursor plugin in this mode: `glow` or `replace`. |
+| `data-wand-panel-hotkey` | Adds the settings panel with this keyboard shortcut, for example `Alt+Shift+W`. |
 
 If the script element has no `data-wand-*` attributes, the build does not start a wand. You can then use the global `MagicCursorWand`:
 
