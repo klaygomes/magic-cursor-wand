@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { field } from '../config/field';
-import { resolveSection } from './engine';
+import { sectionValues } from './engine';
 
-describe('resolveSection', () => {
+describe('sectionValues', () => {
   const schema = {
     size: field.number({
       label: 'Size',
@@ -16,14 +16,22 @@ describe('resolveSection', () => {
   };
 
   it('gives the theme color to a null color and the default to a missing value', () => {
-    expect(resolveSection(schema, { tint: null }, '#123456')).toEqual({
+    expect(
+      sectionValues(schema, { tint: null }, { color: '#123456', motion: 'auto', maxDpr: 2 }),
+    ).toEqual({
       size: 4,
       tint: '#123456',
     });
   });
 
   it('keeps the values of the section and drops the other keys', () => {
-    expect(resolveSection(schema, { size: 2, tint: '#abcdef', enabled: true }, '#000000')).toEqual({
+    expect(
+      sectionValues(
+        schema,
+        { size: 2, tint: '#abcdef', enabled: true },
+        { color: '#000000', motion: 'auto', maxDpr: 2 },
+      ),
+    ).toEqual({
       size: 2,
       tint: '#abcdef',
     });

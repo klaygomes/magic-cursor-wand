@@ -1,3 +1,5 @@
+import { resolveSection } from '../config/store';
+import { theme as themeSection } from '../config/theme';
 import type {
   ConfigStore,
   ConfigStoreOptions,
@@ -11,7 +13,6 @@ import { createWarnOnce, effectError } from './errors';
 import { createInput, drawOnPress, type Input } from './input';
 import { acquireEnvironment, getDefaultScheduler, joinFrameLoop } from './scheduler';
 import { createSurface, type Surface } from './surface';
-import { themeSection } from './theme';
 import type {
   Effect,
   EffectContext,
@@ -61,25 +62,24 @@ interface PluginState extends Participant {
 type MutableFrame = { -readonly [K in keyof Frame]: Frame[K] };
 
 /**
- * Resolves the values of one section. A `null` color gets the theme color and a missing value gets the default.
+ * Gives the values that one section receives. A missing value gets the default and a `null` color gets the theme color.
  *
  * @param schema - The schema of the section.
  * @param values - The merged values of the section.
- * @param themeColor - The color of the theme.
+ * @param theme - The theme values.
  * @returns The values that the section receives.
  */
-export function resolveSection(
+export function sectionValues(
   schema: Schema,
   values: SectionValues | undefined,
-  themeColor: string,
+  theme: ThemeConfig,
 ): SectionValues {
-  const resolved: SectionValues = {};
-  for (const key of Object.keys(schema)) {
-    const definition = schema[key];
-    const value = values?.[key] === undefined ? definition?.default : values[key];
-    resolved[key] = value === null && definition?.kind === 'color' ? themeColor : value;
+  const complete: SectionValues = {};
+  for (const [key, definition] of Object.entries(schema)) {
+    const value = values?.[key];
+    complete[key] = value === undefined ? definition.default : value;
   }
-  return resolved;
+  return resolveSection(complete, theme);
 }
 
 function sameValues(a: SectionValues | undefined, b: SectionValues): boolean {
@@ -116,7 +116,7 @@ export function createWandWith(
   const plugins = options.plugins ?? [];
 
   const store = createStore({
-    sections: [themeSection(), ...effects, ...plugins],
+    sections: [themeSection, ...effects, ...plugins],
     ...(options.config ? { defaults: options.config as AnyConfig } : {}),
     ...(options.providers ? { providers: options.providers } : {}),
     ...(options.locked ? { locked: options.locked } : {}),
@@ -286,7 +286,7 @@ export function createWandWith(
         }
       }
       if (!enabled) continue;
-      const resolved = resolveSection(state.section.schema, values, theme.color);
+      const resolved = sectionValues(state.section.schema, values, theme);
       if (!themeChanged && sameValues(state.resolved, resolved)) continue;
       state.resolved = resolved;
       try {

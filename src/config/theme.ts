@@ -21,13 +21,13 @@ export const theme: Section<'theme', ThemeSchema> = {
   schema: {
     color: field.color({
       label: 'Color',
-      description: 'The color that each section uses when its own color is not set.',
+      description: 'The color of each section that has no color of its own.',
       default: '#ffffff',
     }),
     motion: field.enum<Motion>({
       label: 'Motion',
       description:
-        'The motion mode. The value "auto" follows the reduced motion setting of the system.',
+        'The motion mode. The value "auto" follows the reduced motion option of the system.',
       default: 'auto',
       options: ['auto', 'full', 'reduced', 'off'],
     }),
