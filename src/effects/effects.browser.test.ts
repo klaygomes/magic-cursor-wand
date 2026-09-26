@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { commands, server } from 'vitest/browser';
 import type { Effect, EffectConfig, Frame } from '../core/types';
 import { chalkEffect, chalkSchema } from './chalk';
 import { cloudEffect, cloudSchema } from './cloud';
@@ -107,6 +108,62 @@ function renderGlitter(): CanvasRenderingContext2D {
   return surface;
 }
 
+const CELL = 10;
+const PIXEL_TOLERANCE = 8;
+
+function alphaGrid(surface: CanvasRenderingContext2D): number[][] {
+  const { data } = surface.getImageData(0, 0, WIDTH, HEIGHT);
+  const rows: number[][] = [];
+  for (let top = 0; top < HEIGHT; top += CELL) {
+    const row: number[] = [];
+    for (let left = 0; left < WIDTH; left += CELL) {
+      let sum = 0;
+      for (let y = top; y < top + CELL; y++) {
+        for (let x = left; x < left + CELL; x++) sum += data[(y * WIDTH + x) * 4 + 3] ?? 0;
+      }
+      row.push(Math.round(sum / (CELL * CELL)));
+    }
+    rows.push(row);
+  }
+  return rows;
+}
+
+function largestDifference(actual: number[][], expected: number[][]): number {
+  let largest = actual.length === expected.length ? 0 : 255;
+  actual.forEach((row, y) => {
+    const stored = expected[y] ?? [];
+    if (stored.length !== row.length) largest = 255;
+    row.forEach((value, x) => {
+      largest = Math.max(largest, Math.abs(value - (stored[x] ?? 255)));
+    });
+  });
+  return largest;
+}
+
+async function expectPixelSnapshot(name: string, surface: CanvasRenderingContext2D): Promise<void> {
+  const path = `src/effects/__pixels__/${name}.json`;
+  const actual = alphaGrid(surface);
+  const serialized = `[\n${actual.map((row) => `  ${JSON.stringify(row)}`).join(',\n')}\n]\n`;
+  const update = server.config.snapshotOptions.updateSnapshot;
+  let stored: string | undefined;
+  try {
+    stored = await commands.readFile(path);
+  } catch {
+    stored = undefined;
+  }
+  if (stored === undefined || update === 'all') {
+    expect(
+      stored !== undefined || update !== 'none',
+      `The pixel snapshot "${path}" is missing.`,
+    ).toBe(true);
+    await commands.writeFile(path, serialized);
+    return;
+  }
+  expect(largestDifference(actual, JSON.parse(stored) as number[][])).toBeLessThanOrEqual(
+    PIXEL_TOLERANCE,
+  );
+}
+
 function pixels(surface: CanvasRenderingContext2D): Uint8ClampedArray {
   return surface.getImageData(0, 0, WIDTH, HEIGHT).data;
 }
@@ -171,6 +228,14 @@ describe('effect rendering', () => {
     expect(near.mean.b).toBeGreaterThan(150);
     expect(near.mean.g).toBeLessThan(40);
     expect(stats(surface, 0, 0, 30, 30).painted).toBe(0);
+  });
+
+  it.each([
+    ['cloud', renderCloud],
+    ['chalk', renderChalk],
+    ['glitter', renderGlitter],
+  ] as const)('matches the seeded pixel snapshot of the %s effect', async (name, render) => {
+    await expectPixelSnapshot(name, render());
   });
 
   it('renders the same pixels for the same seed', () => {
