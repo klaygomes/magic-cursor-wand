@@ -40,9 +40,12 @@ class FakeFolder implements TweakpaneContainer {
   readonly folders: FakeFolder[] = [];
   readonly bindings: FakeBinding[] = [];
   readonly buttons = new Map<string, FakeBinding>();
-  constructor(readonly title: string) {}
-  addFolder(params: { title: string }): FakeFolder {
-    const folder = new FakeFolder(params.title);
+  constructor(
+    readonly title: string,
+    readonly expanded = true,
+  ) {}
+  addFolder(params: { title: string; expanded?: boolean }): FakeFolder {
+    const folder = new FakeFolder(params.title, params.expanded ?? true);
     this.folders.push(folder);
     return folder;
   }
@@ -204,6 +207,24 @@ describe('panelPlugin', () => {
     expect(chalk.binding('Color').params.view).toBe('color');
     expect([...pane.buttons.keys()]).toEqual(['Reset', 'Import', 'Export', 'Close']);
     expect([...pane.buttons.keys()]).not.toContain('Save');
+  });
+
+  it('expands only the theme folder by default', async () => {
+    const { plugin } = setup();
+    await plugin.open();
+    expect(lastPane().folders.map((folder) => [folder.title, folder.expanded])).toEqual([
+      ['Theme', true],
+      ['Chalk', false],
+    ]);
+  });
+
+  it('expands the folders of the sections in the option expanded', async () => {
+    const { plugin } = setup({ expanded: ['chalk'] });
+    await plugin.open();
+    expect(lastPane().folders.map((folder) => [folder.title, folder.expanded])).toEqual([
+      ['Theme', false],
+      ['Chalk', true],
+    ]);
   });
 
   it('shows a nullable color as an inherit checkbox and a color control', async () => {

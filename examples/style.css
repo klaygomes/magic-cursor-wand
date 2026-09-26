@@ -2,6 +2,11 @@
   Palette and type come from estacouveflor.com.
   Radius system: buttons and keys are pills, surfaces are 20px, code blocks are 12px.
 */
+@import "@fontsource/rubik/latin-400.css";
+@import "@fontsource/rubik/latin-800.css";
+@import "@fontsource/molengo/latin-400.css";
+@import "@fontsource/abel/latin-400.css";
+
 :root {
   --purple-950: #1c0430;
   --purple-900: #25063c;
@@ -481,6 +486,9 @@ kbd {
 body > div:has(> .tp-rotv) {
   /* biome-ignore lint/complexity/noImportantStyles: only !important overrides an inline style */
   top: 84px !important;
+  /* biome-ignore lint/complexity/noImportantStyles: only !important overrides an inline style */
+  max-height: calc(100dvh - 100px) !important;
+  overscroll-behavior: contain;
   border-radius: var(--radius-code);
   box-shadow: 0 24px 48px -12px rgba(12, 1, 22, 0.7);
 }

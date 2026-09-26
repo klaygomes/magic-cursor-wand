@@ -23,7 +23,7 @@ Use this procedure to let a visitor or a site owner change the settings with a p
 
 ## Result
 
-The plugin loads Tweakpane only when the panel opens. The panel shows one group for each section and one control for each field.
+The plugin loads Tweakpane only when the panel opens. The panel shows one group for each section and one control for each field. At start, only the theme group shows its controls. To show more groups, add their section names to the option `expanded`, for example `['theme', 'chalk']`.
 
 | Trigger | Result |
 |---|---|

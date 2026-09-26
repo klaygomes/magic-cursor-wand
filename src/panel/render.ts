@@ -83,6 +83,7 @@ function bindControl(binder: Binder, folder: TweakpaneContainer, control: PanelC
  * @param container - The element that contains the pane.
  * @param model - The panel model.
  * @param title - The title of the pane.
+ * @param expanded - The names of the sections that show their controls at start.
  * @param actions - The actions of the Close, Import and Export buttons.
  * @returns The rendered pane.
  */
@@ -91,6 +92,7 @@ export function renderPane(
   container: HTMLElement,
   model: PanelModel,
   title: string,
+  expanded: ReadonlySet<string>,
   actions: PaneActions,
 ): RenderedPane {
   const pane = new tweakpane.Pane({
@@ -103,7 +105,7 @@ export function renderPane(
   const syncs = new Map<string, Sync>();
 
   for (const group of model.groups) {
-    const folder = pane.addFolder({ title: group.title, expanded: group.name === 'theme' });
+    const folder = pane.addFolder({ title: group.title, expanded: expanded.has(group.name) });
     for (const control of group.controls) {
       syncs.set(control.path, bindControl(binder, folder, control));
     }

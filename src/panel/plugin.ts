@@ -31,6 +31,8 @@ export interface PanelPluginOptions {
   readonly container?: HTMLElement;
   /** The title of the panel. */
   readonly title?: string;
+  /** The names of the sections that show their controls when the panel opens. The default is `['theme']`. */
+  readonly expanded?: readonly string[];
 }
 
 /** The settings panel plugin. The plugin instance opens and closes the panel. */
@@ -116,7 +118,7 @@ function createLauncher(doc: Document): HTMLButtonElement {
 /**
  * Create a plugin that shows a settings panel with Tweakpane 4. The plugin loads Tweakpane when the panel opens for the first time.
  *
- * @param options - The loader, the triggers, the nonce, the container and the title.
+ * @param options - The loader, the triggers, the nonce, the container, the title and the expanded sections.
  * @returns The plugin with the name `panel`. Use `open()`, `close()` and `toggle()` to control the panel.
  * @example
  * const panel = panelPlugin({ hotkey: 'Alt+Shift+W', launcher: true });
@@ -126,6 +128,7 @@ function createLauncher(doc: Document): HTMLButtonElement {
 export function panelPlugin(options: PanelPluginOptions = {}): PanelPlugin {
   const load = options.load ?? loadTweakpanePackage;
   const title = options.title ?? DEFAULT_TITLE;
+  const expanded = new Set(options.expanded ?? ['theme']);
   let mounted: Mounted | undefined;
   let isOpen = false;
 
@@ -160,7 +163,7 @@ export function panelPlugin(options: PanelPluginOptions = {}): PanelPlugin {
       throw error;
     }
     if (state.pane) return state.pane;
-    const pane = renderPane(tweakpane, state.box, state.model, title, {
+    const pane = renderPane(tweakpane, state.box, state.model, title, expanded, {
       close: () => plugin.close(),
       importFile: () => state.fileInput.click(),
       exportFile: () => downloadJson(state.doc, state.model),

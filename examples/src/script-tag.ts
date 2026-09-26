@@ -1,3 +1,5 @@
-import './fonts';
-import './reveal';
-import './copy';
+import { bindCopyButtons } from './copy';
+import { revealOnScroll } from './reveal';
+
+revealOnScroll();
+bindCopyButtons();
