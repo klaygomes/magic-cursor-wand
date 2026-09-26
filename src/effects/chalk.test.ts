@@ -39,7 +39,7 @@ describe('chalkEffect', () => {
     expect(effect.composite).toBe('source-over');
     expect(defaultsOf(chalkSchema)).toEqual({
       size: 14,
-      maxLength: 350,
+      maxLength: 1530,
       smoothing: 0.35,
       softness: 0.65,
       taper: 0.25,

@@ -13,12 +13,12 @@
 | Path | Type | Default | Range | Description |
 | --- | --- | --- | --- | --- |
 | `cloud.size` | Number | `18` | `10` to `150`, step `1` | The minimum radius of a new cloud in pixels. |
-| `cloud.density` | Number | `0.25` | `0.1` to `1`, step `0.05` | The chance of a new cloud in each frame while the pointer moves. |
-| `cloud.bounce` | Number | `26` | `0` to `150`, step `1` | The range of the noise wobble in pixels. The value 0 stops the wobble. |
+| `cloud.density` | Number | `0.5` | `0.1` to `1`, step `0.05` | The chance of a new cloud in each frame while the pointer moves. |
+| `cloud.bounce` | Number | `150` | `0` to `150`, step `1` | The range of the noise wobble in pixels. The value 0 stops the wobble. |
 | `cloud.spread` | Number | `50` | `0` to `200`, step `1` | The size of the area around the pointer where new clouds start. |
-| `cloud.fadeRate` | Number | `0.01` | `0.001` to `0.05`, step `0.001` | The speed at which a cloud disappears. |
+| `cloud.fadeRate` | Number | `0.035` | `0.001` to `0.05`, step `0.001` | The speed at which a cloud disappears. |
 | `cloud.color` | Color or `null` | `#fad30b` | `#rrggbb` | The color of the clouds. The value null uses the theme color. |
-| `cloud.maxClouds` | Number | `300` | `1` to `1000`, step `1` | The maximum number of clouds on the screen. |
+| `cloud.maxClouds` | Number | `348` | `1` to `1000`, step `1` | The maximum number of clouds on the screen. |
 | `cloud.enabled` | Boolean | `true` |  | The section operates only when this value is `true`. |
 
 ## `chalk`
@@ -26,7 +26,7 @@
 | Path | Type | Default | Range | Description |
 | --- | --- | --- | --- | --- |
 | `chalk.size` | Number | `14` | `1` to `50`, step `1` | The width of the stroke in pixels. |
-| `chalk.maxLength` | Number | `350` | `50` to `2000`, step `10` | The maximum length of a stroke in pixels. The oldest part of the stroke dissolves. |
+| `chalk.maxLength` | Number | `1530` | `50` to `2000`, step `10` | The maximum length of a stroke in pixels. The oldest part of the stroke dissolves. |
 | `chalk.smoothing` | Number | `0.35` | `0` to `0.95`, step `0.05` | The steadiness of the line. The value 0 uses the raw pointer positions. |
 | `chalk.softness` | Number | `0.65` | `0` to `1`, step `0.05` | The width of the feathered edge. The value 0 gives a crisp edge. |
 | `chalk.taper` | Number | `0.25` | `0` to `1`, step `0.05` | The length of the thin tips at the two ends of the stroke. |

@@ -45,7 +45,7 @@ export const chalkSchema: ChalkSchema = {
     label: 'Maximum chalk length',
     description:
       'The maximum length of a stroke in pixels. The oldest part of the stroke dissolves.',
-    default: 350,
+    default: 1530,
     min: 50,
     max: 2000,
     step: 10,

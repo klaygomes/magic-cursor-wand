@@ -36,7 +36,7 @@ export const cloudSchema: CloudSchema = {
   density: field.number({
     label: 'Cloud density',
     description: 'The chance of a new cloud in each frame while the pointer moves.',
-    default: 0.25,
+    default: 0.5,
     min: 0.1,
     max: 1,
     step: 0.05,
@@ -44,7 +44,7 @@ export const cloudSchema: CloudSchema = {
   bounce: field.number({
     label: 'Cloud bounce',
     description: 'The range of the noise wobble in pixels. The value 0 stops the wobble.',
-    default: 26,
+    default: 150,
     min: 0,
     max: 150,
     step: 1,
@@ -60,7 +60,7 @@ export const cloudSchema: CloudSchema = {
   fadeRate: field.number({
     label: 'Cloud fade speed',
     description: 'The speed at which a cloud disappears.',
-    default: 0.01,
+    default: 0.035,
     min: 0.001,
     max: 0.05,
     step: 0.001,
@@ -74,7 +74,7 @@ export const cloudSchema: CloudSchema = {
   maxClouds: field.number({
     label: 'Maximum clouds',
     description: 'The maximum number of clouds on the screen.',
-    default: 300,
+    default: 348,
     min: 1,
     max: 1000,
     step: 1,

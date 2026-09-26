@@ -29,12 +29,12 @@ describe('cloudEffect', () => {
     expect(effect.composite).toBe('source-over');
     expect(defaultsOf(cloudSchema)).toEqual({
       size: 18,
-      density: 0.25,
-      bounce: 26,
+      density: 0.5,
+      bounce: 150,
       spread: 50,
-      fadeRate: 0.01,
+      fadeRate: 0.035,
       color: '#fad30b',
-      maxClouds: 300,
+      maxClouds: 348,
     });
   });
 
@@ -45,7 +45,7 @@ describe('cloudEffect', () => {
   });
 
   it('spawns clouds near the pointer and draws them with a low alpha', () => {
-    const { effect, target } = setup({ density: 1 });
+    const { effect, target } = setup({ density: 1, bounce: 60, spread: 30 });
     effect.pointer?.(pointerAt('move', 100, 80, { drawing: false }));
     for (let i = 0; i < 10; i++) effect.update(frameAt(i));
     expect(effect.isIdle()).toBe(false);
