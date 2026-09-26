@@ -60,6 +60,7 @@ export interface PanelModel {
 }
 
 const THEME = 'theme';
+const PANEL = 'panel';
 const DEFAULT_THEME_COLOR = '#ffffff';
 
 const fallbackThemeSchema: Schema = {
@@ -187,7 +188,8 @@ export function panelModel<C>(wand: Wand<C>): PanelModel {
       const config = readConfig();
       const themeColor = config[THEME]?.color;
       const inherited = typeof themeColor === 'string' ? themeColor : DEFAULT_THEME_COLOR;
-      return orderedSections(wand.sections).map((section) => {
+      const shown = orderedSections(wand.sections).filter((section) => section.name !== PANEL);
+      return shown.map((section) => {
         const values = config[section.name] ?? {};
         const controls = Object.keys(section.schema).flatMap((key) => {
           const definition = section.schema[key];
@@ -195,7 +197,7 @@ export function panelModel<C>(wand: Wand<C>): PanelModel {
             ? [controlOf(section.name, key, definition, values[key], inherited)]
             : [];
         });
-        if (section.name !== THEME) {
+        if (section.name !== THEME && !('enabled' in section.schema)) {
           controls.unshift(
             controlOf(section.name, 'enabled', enabledField, values.enabled, inherited),
           );

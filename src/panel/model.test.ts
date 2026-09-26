@@ -149,3 +149,27 @@ describe('panelModel', () => {
     expect(wand.listenerCount).toBe(0);
   });
 });
+
+describe('panelModel with the sections of the configuration store', () => {
+  it('shows one enabled control when the schema has the enabled field', () => {
+    const storeChalk: Section = {
+      name: 'chalk',
+      schema: {
+        enabled: field.boolean({
+          label: 'Enabled',
+          description: 'Turns on the section.',
+          default: true,
+        }),
+        ...chalk.schema,
+      },
+    };
+    const { model } = setup([theme, storeChalk, panel]);
+    const group = model.groups.find((candidate) => candidate.name === 'chalk');
+    expect(group?.controls.filter((control) => control.path === 'chalk.enabled')).toHaveLength(1);
+  });
+
+  it('does not show a group for the panel section', () => {
+    const { model } = setup();
+    expect(model.groups.map((group) => group.name)).not.toContain('panel');
+  });
+});
