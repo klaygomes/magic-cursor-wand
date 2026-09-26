@@ -114,7 +114,8 @@ Examine your prose for these rules before you send the pull request:
 
 | Event | Result |
 |---|---|
-| A collaborator opens or updates a pull request | CI runs. Then a preview package goes to pkg.pr.new. The pull request gets a comment with the install command. |
+| A pull request opens or changes | CI runs. |
+| A collaborator writes the comment `/publish` on a pull request | CI runs on the last commit of the pull request. Then a preview package goes to pkg.pr.new. The pull request gets a comment with the install command. |
 | A pull request with a changeset merges into `main` | CI runs. Then the release workflow opens or updates the pull request `chore: release`. |
 | The pull request `chore: release` merges into `main` | CI runs. Then the release workflow publishes the package to npm, adds the tag `vX.Y.Z` and makes a GitHub release. |
 

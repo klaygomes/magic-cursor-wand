@@ -264,7 +264,7 @@ Port each effect from the demo. Keep the demo values as the defaults.
 3. The size limit for the core is 8 kB gzip.
 4. Changesets controls versions and the changelog. The release workflow opens the pull request `chore: release`. When it merges, the workflow publishes to npm with trusted publishing and provenance.
 5. GitHub Pages hosts the documentation site and the demo.
-6. A pull request from a collaborator publishes a preview package to pkg.pr.new.
+6. When a collaborator writes the comment `/publish` on a pull request, CI runs and a preview package goes to pkg.pr.new.
 
 ## 12. Changes to this plan
 

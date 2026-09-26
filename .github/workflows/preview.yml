@@ -1,21 +1,43 @@
 name: Publish a preview
 
 on:
-  pull_request:
+  issue_comment:
+    types: [created]
 
 jobs:
+  authorize:
+    name: Read the pull request
+    if: >-
+      github.event.issue.pull_request &&
+      github.event.comment.body == '/publish' &&
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      sha: ${{ steps.pull.outputs.sha }}
+    steps:
+      - id: pull
+        run: echo "sha=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.issue.number }} --jq .head.sha)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
   check:
+    needs: authorize
     uses: ./.github/workflows/ci.yml
+    with:
+      ref: ${{ needs.authorize.outputs.sha }}
 
   preview:
     name: Publish to pkg.pr.new
-    needs: check
-    if: contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.pull_request.author_association)
+    needs: [authorize, check]
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.authorize.outputs.sha }}
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:

@@ -1,13 +1,19 @@
 name: CI
 
 on:
+  pull_request:
   workflow_call:
+    inputs:
+      ref:
+        description: The commit to check. The default is the commit of the event.
+        type: string
+        default: ''
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ inputs.ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -16,6 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref }}
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
@@ -42,6 +50,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref }}
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
@@ -73,6 +83,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref }}
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
