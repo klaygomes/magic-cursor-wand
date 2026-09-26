@@ -110,6 +110,8 @@ function renderGlitter(): CanvasRenderingContext2D {
 
 const CELL = 10;
 const PIXEL_TOLERANCE = 8;
+// Clouds stack many 10% alpha layers, so rounding differences between engines and platforms add up.
+const CLOUD_PIXEL_TOLERANCE = 14;
 
 function alphaGrid(surface: CanvasRenderingContext2D): number[][] {
   const { data } = surface.getImageData(0, 0, WIDTH, HEIGHT);
@@ -140,7 +142,11 @@ function largestDifference(actual: number[][], expected: number[][]): number {
   return largest;
 }
 
-async function expectPixelSnapshot(name: string, surface: CanvasRenderingContext2D): Promise<void> {
+async function expectPixelSnapshot(
+  name: string,
+  surface: CanvasRenderingContext2D,
+  tolerance: number,
+): Promise<void> {
   const path = `src/effects/__pixels__/${name}.json`;
   const actual = alphaGrid(surface);
   const serialized = `[\n${actual.map((row) => `  ${JSON.stringify(row)}`).join(',\n')}\n]\n`;
@@ -160,7 +166,7 @@ async function expectPixelSnapshot(name: string, surface: CanvasRenderingContext
     return;
   }
   expect(largestDifference(actual, JSON.parse(stored) as number[][])).toBeLessThanOrEqual(
-    PIXEL_TOLERANCE,
+    tolerance,
   );
 }
 
@@ -231,12 +237,15 @@ describe('effect rendering', () => {
   });
 
   it.each([
-    ['cloud', renderCloud],
-    ['chalk', renderChalk],
-    ['glitter', renderGlitter],
-  ] as const)('matches the seeded pixel snapshot of the %s effect', async (name, render) => {
-    await expectPixelSnapshot(name, render());
-  });
+    ['cloud', renderCloud, CLOUD_PIXEL_TOLERANCE],
+    ['chalk', renderChalk, PIXEL_TOLERANCE],
+    ['glitter', renderGlitter, PIXEL_TOLERANCE],
+  ] as const)(
+    'matches the seeded pixel snapshot of the %s effect',
+    async (name, render, tolerance) => {
+      await expectPixelSnapshot(name, render(), tolerance);
+    },
+  );
 
   it('renders the same pixels for the same seed', () => {
     for (const render of [renderCloud, renderChalk, renderGlitter]) {
