@@ -209,6 +209,12 @@ describe('panelPlugin', () => {
     expect([...pane.buttons.keys()]).not.toContain('Save');
   });
 
+  it('removes the Close button when closable is false', async () => {
+    const { plugin } = setup({ closable: false });
+    await plugin.open();
+    expect([...lastPane().buttons.keys()]).toEqual(['Reset', 'Import', 'Export']);
+  });
+
   it('expands only the theme folder by default', async () => {
     const { plugin } = setup();
     await plugin.open();

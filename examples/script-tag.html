@@ -20,41 +20,45 @@
       </nav>
       <div class="accent-strip"></div>
     </header>
-    <main>
-      <section class="page-intro" data-reveal>
-        <h1>One script <em>tag.</em></h1>
-        <p class="lead">No bundler. The data attributes start the wand, and the integrity hash protects the file.</p>
-      </section>
-      <section class="script-layout" data-reveal>
-        <div class="code-panel">
-          <pre id="script-code"><code data-highlight="html">&lt;script
-  src="https://cdn.jsdelivr.net/npm/magic-cursor-wand@0.1.0/dist/magic-cursor-wand.iife.js"
-  integrity="sha384-CVksk8mhd/TzobgPnt6yBZz4uBXE/TrP9yr00gSF6aqvPTGXCcZrUB4ezZ7kYf3o"
-  crossorigin="anonymous"
-  data-wand-storage-key="my-site-wand"
-  data-wand-cursor="replace"
-  data-wand-panel-hotkey="Alt+Shift+W"
-&gt;&lt;/script&gt;</code></pre>
-          <button class="copy" type="button" data-copy="script-code">Copy</button>
-        </div>
-        <dl class="attributes">
-          <div><dt>data-wand-config-url</dt><dd>Loads settings from an HTTP endpoint.</dd></div>
-          <div><dt>data-wand-storage-key</dt><dd>Keeps the settings of each visitor in localStorage.</dd></div>
-          <div><dt>data-wand-cursor</dt><dd>Adds the cursor: <code>glow</code> or <code>replace</code>.</dd></div>
-          <div><dt>data-wand-panel-hotkey</dt><dd>Opens the settings panel with this shortcut.</dd></div>
-        </dl>
-      </section>
-    </main>
+    <div class="layout">
+      <main>
+        <section class="page-intro" data-reveal>
+          <h1>One script <em>tag.</em></h1>
+          <p class="lead">No bundler. The data attributes start the wand, and the integrity hash protects the file.</p>
+        </section>
+        <section class="script-layout" data-reveal>
+          <div class="code-panel">
+            <pre id="script-code"><code data-highlight="html">&lt;script
+    src="https://cdn.jsdelivr.net/npm/magic-cursor-wand@0.1.0/dist/magic-cursor-wand.iife.js"
+    integrity="sha384-CVksk8mhd/TzobgPnt6yBZz4uBXE/TrP9yr00gSF6aqvPTGXCcZrUB4ezZ7kYf3o"
+    crossorigin="anonymous"
+    data-wand-storage-key="my-site-wand"
+    data-wand-cursor="replace"
+    data-wand-panel-hotkey="Alt+Shift+W"
+  &gt;&lt;/script&gt;</code></pre>
+            <button class="copy" type="button" data-copy="script-code">Copy</button>
+          </div>
+          <dl class="attributes">
+            <div><dt>data-wand-config-url</dt><dd>Loads settings from an HTTP endpoint.</dd></div>
+            <div><dt>data-wand-storage-key</dt><dd>Keeps the settings of each visitor in localStorage.</dd></div>
+            <div><dt>data-wand-cursor</dt><dd>Adds the cursor: <code>glow</code> or <code>replace</code>.</dd></div>
+            <div><dt>data-wand-panel-hotkey</dt><dd>Opens the settings panel with this shortcut.</dd></div>
+          </dl>
+        </section>
+      </main>
+      <aside id="settings" class="settings-dock" aria-label="Wand settings"></aside>
+    </div>
     <footer class="site-footer">
       <p>MIT license. Colors and type from <a href="https://www.estacouveflor.com/">Esta couve flor</a>.</p>
     </footer>
     <script type="module" src="./src/script-tag.ts"></script>
     <script
       src="./magic-cursor-wand.iife.js"
-      data-wand-config-url="data:application/json,%7B%22v%22%3A1%2C%22theme%22%3A%7B%22color%22%3A%22%23fad30b%22%7D%2C%22glitter%22%3A%7B%22color%22%3A%22%23c63f75%22%7D%2C%22cloud%22%3A%7B%22color%22%3A%22%23c084fc%22%7D%7D"
-      data-wand-storage-key="magic-cursor-wand-script-demo-v2"
+      data-wand-storage-key="magic-cursor-wand-script-demo-v3"
       data-wand-cursor="replace"
-      data-wand-panel-hotkey="Alt+Shift+W"
+      data-wand-panel="open"
+      data-wand-panel-container="#settings"
+      data-wand-panel-expanded="theme,chalk,glitter,cloud,cursor"
     ></script>
   </body>
 </html>

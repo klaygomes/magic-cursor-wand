@@ -20,14 +20,17 @@
       </nav>
       <div class="accent-strip"></div>
     </header>
-    <main>
-      <section class="page-intro" data-reveal>
-        <h1>Container <em>mode.</em></h1>
-        <p class="lead">The wand draws only inside the board. The rest of the page works as usual.</p>
-      </section>
-      <div id="board" class="board" data-reveal></div>
-      <p class="note">Push the button inside the board and move the pointer.</p>
-    </main>
+    <div class="layout">
+      <main>
+        <section class="page-intro" data-reveal>
+          <h1>Container <em>mode.</em></h1>
+          <p class="lead">The wand draws only inside the board. The rest of the page works as usual.</p>
+        </section>
+        <div id="board" class="board" data-reveal></div>
+        <p class="note">Push the button inside the board and move the pointer.</p>
+      </main>
+      <aside id="settings" class="settings-dock" aria-label="Wand settings"></aside>
+    </div>
     <footer class="site-footer">
       <p>MIT license. Colors and type from <a href="https://www.estacouveflor.com/">Esta couve flor</a>.</p>
     </footer>

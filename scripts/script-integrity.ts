@@ -23,7 +23,6 @@ function cdnUrl(version: string): string {
   return `https://cdn.jsdelivr.net/npm/magic-cursor-wand@${version}/dist/magic-cursor-wand.iife.js`;
 }
 
-// jsDelivr can answer 404 for some seconds after a new version reaches npm.
 async function download(url: string): Promise<Buffer> {
   for (let attempt = 1; ; attempt++) {
     const response = await fetch(url);

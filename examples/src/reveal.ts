@@ -1,4 +1,3 @@
-/** Adds the class `is-visible` to each `[data-reveal]` element when it enters the viewport. */
 export function revealOnScroll(): void {
   const observer = new IntersectionObserver(
     (entries) => {

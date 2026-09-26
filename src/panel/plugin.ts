@@ -33,6 +33,8 @@ export interface PanelPluginOptions {
   readonly title?: string;
   /** The names of the sections that show their controls when the panel opens. The default is `['theme']`. */
   readonly expanded?: readonly string[];
+  /** Set to false to remove the Close button, so that the panel stays open. */
+  readonly closable?: boolean;
 }
 
 /** The settings panel plugin. The plugin instance opens and closes the panel. */
@@ -163,11 +165,18 @@ export function panelPlugin(options: PanelPluginOptions = {}): PanelPlugin {
       throw error;
     }
     if (state.pane) return state.pane;
-    const pane = renderPane(tweakpane, state.box, state.model, title, expanded, {
-      close: () => plugin.close(),
+    const actions = {
       importFile: () => state.fileInput.click(),
       exportFile: () => downloadJson(state.doc, state.model),
-    });
+    };
+    const pane = renderPane(
+      tweakpane,
+      state.box,
+      state.model,
+      title,
+      expanded,
+      options.closable === false ? actions : { ...actions, close: () => plugin.close() },
+    );
     if (options.nonce) applyStyleNonce(state.doc, options.nonce);
     state.pane = pane;
     state.cleanups.push(state.model.subscribe(() => pane.sync()));

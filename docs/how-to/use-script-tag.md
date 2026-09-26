@@ -22,6 +22,9 @@ Use this procedure to add the effects to a page without a bundler. The script bu
 | `data-wand-storage-key` | Adds a localStorage provider with this key. |
 | `data-wand-cursor` | Adds the cursor plugin in this mode: `glow` or `replace`. |
 | `data-wand-panel-hotkey` | Adds the settings panel with this keyboard shortcut, for example `Alt+Shift+W`. |
+| `data-wand-panel` | Adds the settings panel. The value `open` opens the panel at start and removes its Close button. |
+| `data-wand-panel-container` | Puts the panel in the element that this CSS selector finds, for example `#settings`. |
+| `data-wand-panel-expanded` | Shows the controls of these sections at start, for example `theme,chalk`. |
 
 If the script element has no `data-wand-*` attributes, the build does not start a wand. You can then use the global `MagicCursorWand`:
 

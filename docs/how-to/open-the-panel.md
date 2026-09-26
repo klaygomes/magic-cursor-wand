@@ -31,4 +31,6 @@ The plugin loads Tweakpane only when the panel opens. The panel shows one group 
 | `urlParam` | The panel opens when the page address contains this parameter. |
 | `launcher` | A small button on the page opens the panel. |
 
+To keep the panel open, set `closable` to `false` and call `open()` one time. The panel then has no Close button.
+
 All triggers are off by default. The panel has the buttons Reset, Import and Export. Autosave keeps each change, so the panel has no Save button.

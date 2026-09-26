@@ -20,50 +20,53 @@
       </nav>
       <div class="accent-strip"></div>
     </header>
-    <main>
-      <section class="hero">
-        <div class="hero-copy" data-reveal>
-          <h1>A wand for <em>your pointer.</em></h1>
-          <p class="lead">Chalk strokes, glitter and soft clouds that follow the pointer. One small library with no dependencies.</p>
-          <div class="actions">
-            <button class="button" type="button" data-open-panel>Open settings</button>
-            <a class="button ghost" href="../guide/getting-started">Read the docs</a>
+    <div class="layout">
+      <main>
+        <section class="hero">
+          <div class="hero-copy" data-reveal>
+            <h1>A wand for <em>your pointer.</em></h1>
+            <p class="lead">Chalk strokes, glitter and soft clouds that follow the pointer. One small library with no dependencies.</p>
+            <div class="actions">
+              <a class="button" href="../guide/getting-started">Get started</a>
+              <a class="button ghost" href="https://github.com/klaygomes/magic-cursor-wand">View on GitHub</a>
+            </div>
           </div>
-        </div>
-        <figure class="slate" data-slate data-reveal>
-          <figcaption>Push the button and draw anywhere on this page.</figcaption>
-        </figure>
-      </section>
+          <figure class="slate" data-slate data-reveal>
+            <figcaption>Push the button and draw anywhere on this page.</figcaption>
+          </figure>
+        </section>
 
-      <section class="install" data-reveal aria-labelledby="install-title">
-        <h2 id="install-title">Two lines to start.</h2>
-        <div class="code-panel">
-          <pre id="install-code"><code><span class="prompt">npm i magic-cursor-wand</span>
+        <section class="install" data-reveal aria-labelledby="install-title">
+          <h2 id="install-title">Two lines to start.</h2>
+          <div class="code-panel">
+            <pre id="install-code"><code><span class="prompt">npm i magic-cursor-wand</span>
 
-<span class="kw">import</span> { createWand } <span class="kw">from</span> <span class="str">'magic-cursor-wand'</span>;
-createWand();</code></pre>
-          <button class="copy" type="button" data-copy="install-code">Copy</button>
-        </div>
-      </section>
+  <span class="kw">import</span> { createWand } <span class="kw">from</span> <span class="str">'magic-cursor-wand'</span>;
+  createWand();</code></pre>
+            <button class="copy" type="button" data-copy="install-code">Copy</button>
+          </div>
+        </section>
 
-      <section class="features" aria-labelledby="features-title">
-        <h2 id="features-title" data-reveal>Change everything, keep the core.</h2>
-        <div class="bento">
-          <article class="cell cell-settings" data-reveal>
-            <h3>Every value is a setting.</h3>
-            <p>Chalk size, smoothing, taper, gravity, twinkle and cloud density. Push <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>W</kbd> and move the sliders while you draw.</p>
-          </article>
-          <article class="cell cell-providers" data-reveal>
-            <h3>Settings from anywhere.</h3>
-            <p>Read them from localStorage, an HTTP endpoint or a server event stream. Changes save automatically.</p>
-          </article>
-          <article class="cell cell-plugins" data-reveal>
-            <h3>Your own effects.</h3>
-            <p>Effects, plugins and providers are small objects. Add one without a change to the core.</p>
-          </article>
-        </div>
-      </section>
-    </main>
+        <section class="features" aria-labelledby="features-title">
+          <h2 id="features-title" data-reveal>Change everything, keep the core.</h2>
+          <div class="bento">
+            <article class="cell cell-settings" data-reveal>
+              <h3>Every value is a setting.</h3>
+              <p>Chalk size, smoothing, taper, gravity, twinkle and cloud density. Move the sliders in the panel while you draw.</p>
+            </article>
+            <article class="cell cell-providers" data-reveal>
+              <h3>Settings from anywhere.</h3>
+              <p>Read them from localStorage, an HTTP endpoint or a server event stream. Changes save automatically.</p>
+            </article>
+            <article class="cell cell-plugins" data-reveal>
+              <h3>Your own effects.</h3>
+              <p>Effects, plugins and providers are small objects. Add one without a change to the core.</p>
+            </article>
+          </div>
+        </section>
+      </main>
+      <aside id="settings" class="settings-dock" aria-label="Wand settings"></aside>
+    </div>
     <footer class="site-footer">
       <p>MIT license. Colors and type from <a href="https://www.estacouveflor.com/">Esta couve flor</a>.</p>
     </footer>

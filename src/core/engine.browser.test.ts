@@ -252,7 +252,7 @@ describe('frame loop', () => {
     const scheduler = createManualScheduler();
     const effect = fakeEffect('fx');
     const wand = track(createTestWand({ effects: [effect], scheduler }));
-    expect(last(effect.configured)).toEqual({ size: 5, tint: '#ffffff' });
+    expect(last(effect.configured)).toEqual({ size: 5, tint: '#fad30b' });
     wand.setConfig({ theme: { color: '#ff0000' } });
     expect(last(effect.configured)).toEqual({ size: 5, tint: '#ff0000' });
     wand.setConfig({ fx: { tint: '#00ff00' } });
@@ -321,7 +321,9 @@ describe('frame loop', () => {
     try {
       const scheduler = createManualScheduler();
       const effect = fakeEffect('fx');
-      track(createTestWand({ effects: [effect], scheduler }));
+      track(
+        createTestWand({ effects: [effect], scheduler, config: { theme: { motion: 'auto' } } }),
+      );
       scheduler.advance();
       expect(effect.frames[0]?.reducedMotion).toBe(true);
       query.matches = false;

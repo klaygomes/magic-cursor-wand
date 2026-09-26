@@ -1,6 +1,6 @@
 # Use light backgrounds
 
-Use this procedure on a page with a light background. The default colors of the effects are white, so they are not easy to see on a light page.
+Use this procedure on a page with a light background. The default color of the effects is yellow (`#fad30b`). On a light page, a dark color is easier to see.
 
 ## Procedure
 

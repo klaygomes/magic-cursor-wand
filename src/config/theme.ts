@@ -22,19 +22,19 @@ export const theme: Section<'theme', ThemeSchema> = {
     color: field.color({
       label: 'Color',
       description: 'The color of each section that has no color of its own.',
-      default: '#ffffff',
+      default: '#fad30b',
     }),
     motion: field.enum<Motion>({
       label: 'Motion',
       description:
         'The motion mode. The value "auto" follows the reduced motion option of the system.',
-      default: 'auto',
+      default: 'full',
       options: ['auto', 'full', 'reduced', 'off'],
     }),
     maxDpr: field.number({
       label: 'Maximum pixel ratio',
       description: 'The maximum device pixel ratio of the canvas.',
-      default: 2,
+      default: 1.5,
       min: 1,
       max: 3,
       step: 0.5,

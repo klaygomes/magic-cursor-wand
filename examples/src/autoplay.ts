@@ -22,7 +22,6 @@ function dispatch(target: Element, type: string, point: { x: number; y: number }
   );
 }
 
-/** Draws one stroke across the element, so the page shows the effect before the first interaction. */
 export function autoplayStroke(slate: Element): void {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 

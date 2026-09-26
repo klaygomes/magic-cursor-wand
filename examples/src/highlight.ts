@@ -7,7 +7,6 @@ function span(className: string, text: string): HTMLSpanElement {
   return element;
 }
 
-/** Colors the tags, attribute names and values of HTML source shown in `code[data-highlight="html"]`. */
 export function highlightHtml(): void {
   for (const code of document.querySelectorAll<HTMLElement>('code[data-highlight="html"]')) {
     const source = code.textContent ?? '';

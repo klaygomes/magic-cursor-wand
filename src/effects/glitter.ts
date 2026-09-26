@@ -24,7 +24,7 @@ export const glitterSchema: GlitterSchema = {
   size: field.number({
     label: 'Glitter size',
     description: 'The base size of a glitter particle in pixels.',
-    default: 10,
+    default: 6,
     min: 1,
     max: 50,
     step: 1,
@@ -32,7 +32,7 @@ export const glitterSchema: GlitterSchema = {
   spawnRate: field.number({
     label: 'Glitter density',
     description: 'The minimum number of particles for each burst.',
-    default: 4,
+    default: 3,
     min: 1,
     max: 20,
     step: 1,
@@ -48,7 +48,7 @@ export const glitterSchema: GlitterSchema = {
   friction: field.number({
     label: 'Friction',
     description: 'The part of the speed that a particle keeps in each frame.',
-    default: 0.98,
+    default: 0.94,
     min: 0.8,
     max: 1,
     step: 0.01,
@@ -64,7 +64,7 @@ export const glitterSchema: GlitterSchema = {
   twinkle: field.number({
     label: 'Twinkle intensity',
     description: 'The sharpness of the twinkle. A high value gives short flashes.',
-    default: 6,
+    default: 5,
     min: 1,
     max: 20,
     step: 1,
@@ -78,7 +78,7 @@ export const glitterSchema: GlitterSchema = {
   maxParticles: field.number({
     label: 'Maximum particles',
     description: 'The maximum number of glitter particles on the screen.',
-    default: 2000,
+    default: 979,
     min: 1,
     max: 5000,
     step: 1,

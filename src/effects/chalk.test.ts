@@ -38,12 +38,12 @@ describe('chalkEffect', () => {
     expect(effect.layer).toBe(10);
     expect(effect.composite).toBe('source-over');
     expect(defaultsOf(chalkSchema)).toEqual({
-      size: 15,
-      maxLength: 600,
-      smoothing: 0.75,
-      softness: 0.5,
-      taper: 0.6,
-      fadeRate: 0.005,
+      size: 14,
+      maxLength: 350,
+      smoothing: 0.35,
+      softness: 0.65,
+      taper: 0.25,
+      fadeRate: 0.039,
       color: '#ffffff',
     });
   });
@@ -145,7 +145,7 @@ describe('chalkEffect', () => {
   });
 
   it('makes a short dot and a burst for a tap', () => {
-    const { effect, context } = setup();
+    const { effect, context } = setup({ fadeRate: 0.005 });
     effect.pointer?.(pointerAt('tap', 30, 40, { pointerType: 'touch', drawing: true }));
     expect(context.bus.bursts).toEqual([{ x: 30, y: 40, strength: 1 }]);
     effect.update(frameAt(0));

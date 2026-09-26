@@ -59,7 +59,7 @@ describe('migrateDocument', () => {
 describe('theme', () => {
   it('declares the core theme fields', () => {
     expect(theme.name).toBe('theme');
-    expect(theme.schema.color.default).toBe('#ffffff');
+    expect(theme.schema.color.default).toBe('#fad30b');
     expect(theme.schema.motion.options).toEqual(['auto', 'full', 'reduced', 'off']);
     expect(theme.schema.maxDpr.parse(10)).toBe(3);
     expect(theme.schema.maxDpr.parse(1.3)).toBe(1.5);

@@ -1,26 +1,54 @@
-# magic-cursor-wand
+<p align="center">
+  <img src="https://www.estacouveflor.com/magic-cursor-wand/wand.svg" width="220" alt="A chalk line with glitter that follows a pointer">
+</p>
 
-Chalk, glitter and cloud effects that follow the pointer in a web browser.
+<h1 align="center">magic-cursor-wand</h1>
 
-- The core has no dependencies. The engine and the store are 8 kB with gzip. The default effects add 6.5 kB.
-- You can add effects, plugins and configuration providers without changes to the core.
-- The wand gets its settings from `localStorage`, from an HTTP endpoint or from a server event stream.
-- The library sets styles with `element.style` only. Thus it operates with a strict Content Security Policy.
-- The wand obeys `prefers-reduced-motion`.
+<p align="center">
+  <strong>Give your pointer a wand.</strong><br>
+  Chalk lines, glitter and soft clouds that follow the pointer on any web page.
+</p>
 
-[Documentation](https://klaygomes.github.io/magic-cursor-wand/) | [Demo](https://klaygomes.github.io/magic-cursor-wand/examples/) | [API reference](https://klaygomes.github.io/magic-cursor-wand/reference/api/)
+<p align="center">
+  <a href="https://www.estacouveflor.com/magic-cursor-wand/examples/"><strong>Try the live demo</strong></a>
+  &nbsp;|&nbsp;
+  <a href="https://www.estacouveflor.com/magic-cursor-wand/">Documentation</a>
+  &nbsp;|&nbsp;
+  <a href="https://www.npmjs.com/package/magic-cursor-wand">npm</a>
+</p>
 
-## Install
+<p align="center">
+  <a href="https://www.npmjs.com/package/magic-cursor-wand"><img src="https://img.shields.io/npm/v/magic-cursor-wand?color=7e23b3" alt="npm version"></a>
+  <a href="https://github.com/klaygomes/magic-cursor-wand/actions/workflows/release.yml"><img src="https://img.shields.io/github/actions/workflow/status/klaygomes/magic-cursor-wand/release.yml?branch=main&label=checks" alt="Checks"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/npm/l/magic-cursor-wand?color=c63f75" alt="MIT license"></a>
+</p>
 
-```sh
-pnpm add magic-cursor-wand
+## One line of code, a page that feels alive
+
+```ts
+createWand();
 ```
 
-You can also use npm or Yarn. The settings panel needs Tweakpane 4, and the hook needs React 18 or later. Both are optional.
+Visitors move the pointer and see soft clouds. They push the button and draw with chalk. They release the button, and the chalk changes into glitter. Your page continues to receive all clicks.
 
-## Quick start with a bundler
+[![The demo page with a chalk line and the settings panel](https://www.estacouveflor.com/magic-cursor-wand/demo.jpg)](https://www.estacouveflor.com/magic-cursor-wand/examples/)
 
-Import `createWand` and call it one time:
+## Why use it
+
+- **Small and fast.** The core has no dependencies. The canvas sleeps when nothing moves, and each effect has a limit for its particles.
+- **Safe on strict pages.** The library sets styles with `element.style` only and makes no network requests. It operates with a strict Content Security Policy.
+- **You control each value.** Each effect has a schema with safe limits. Change the values in code, or let visitors change them in a settings panel.
+- **Settings from any source.** Get the settings from `localStorage`, an HTTP endpoint or a server event stream. The wand saves each change automatically.
+- **Open for your own ideas.** Effects, plugins and providers are small objects. Add your own without a change to the core.
+- **Kind to each visitor.** Set `theme.motion` to `auto`, and the wand obeys `prefers-reduced-motion`.
+
+## Start in one minute
+
+### With a bundler
+
+```sh
+npm install magic-cursor-wand
+```
 
 ```ts
 import { createWand } from 'magic-cursor-wand';
@@ -28,11 +56,11 @@ import { createWand } from 'magic-cursor-wand';
 const wand = createWand();
 ```
 
-The wand attaches a fixed canvas above the page. The canvas does not stop clicks. To remove the canvas and all listeners, call `wand.destroy()`.
+To remove the canvas and all listeners, call `wand.destroy()`.
 
-## Quick start with a script tag
+### With a script tag
 
-Add the script element to the end of the `body` element:
+Add this element to the end of the `body` element. No bundler is necessary:
 
 ```html
 <script
@@ -44,11 +72,9 @@ Add the script element to the end of the `body` element:
 ></script>
 ```
 
-The `data-wand-*` attributes start a wand automatically. Without these attributes, use the global `MagicCursorWand`.
+The `integrity` attribute makes sure that the browser runs only the published file.
 
-## Quick start with React
-
-Call the hook `useWand` in a component:
+### With React
 
 ```tsx
 import { useWand } from 'magic-cursor-wand/react';
@@ -59,15 +85,30 @@ export function Page() {
 }
 ```
 
-The hook destroys the wand when React removes the component.
+The hook removes the wand when React removes the component.
+
+## Make it yours
+
+```ts
+createWand({
+  config: {
+    theme: { color: '#7e23b3' },
+    chalk: { size: 20, taper: 0.5 },
+    glitter: { spawnRate: 6 },
+  },
+});
+```
+
+All fields and their limits are in the [configuration reference](https://www.estacouveflor.com/magic-cursor-wand/reference/configuration). To tune the values by eye, open the [demo](https://www.estacouveflor.com/magic-cursor-wand/examples/), move the sliders, and export the result.
 
 ## Documentation
 
-- [Get started](https://klaygomes.github.io/magic-cursor-wand/guide/getting-started)
-- [Concepts](https://klaygomes.github.io/magic-cursor-wand/concepts/surface)
-- [How-to pages](https://klaygomes.github.io/magic-cursor-wand/how-to/use-script-tag)
-- [Configuration reference](https://klaygomes.github.io/magic-cursor-wand/reference/configuration)
-- [Troubleshooting](https://klaygomes.github.io/magic-cursor-wand/troubleshooting)
+- [Get started](https://www.estacouveflor.com/magic-cursor-wand/guide/getting-started)
+- [Concepts](https://www.estacouveflor.com/magic-cursor-wand/concepts/surface)
+- [How-to pages](https://www.estacouveflor.com/magic-cursor-wand/how-to/use-script-tag)
+- [Configuration reference](https://www.estacouveflor.com/magic-cursor-wand/reference/configuration)
+- [API reference](https://www.estacouveflor.com/magic-cursor-wand/reference/api/)
+- [Troubleshooting](https://www.estacouveflor.com/magic-cursor-wand/troubleshooting)
 
 ## Supported browsers
 

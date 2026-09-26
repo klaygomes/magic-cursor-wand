@@ -36,7 +36,7 @@ export const chalkSchema: ChalkSchema = {
   size: field.number({
     label: 'Chalk size',
     description: 'The width of the stroke in pixels.',
-    default: 15,
+    default: 14,
     min: 1,
     max: 50,
     step: 1,
@@ -45,7 +45,7 @@ export const chalkSchema: ChalkSchema = {
     label: 'Maximum chalk length',
     description:
       'The maximum length of a stroke in pixels. The oldest part of the stroke dissolves.',
-    default: 600,
+    default: 350,
     min: 50,
     max: 2000,
     step: 10,
@@ -53,7 +53,7 @@ export const chalkSchema: ChalkSchema = {
   smoothing: field.number({
     label: 'Smoothing',
     description: 'The steadiness of the line. The value 0 uses the raw pointer positions.',
-    default: 0.75,
+    default: 0.35,
     min: 0,
     max: 0.95,
     step: 0.05,
@@ -61,7 +61,7 @@ export const chalkSchema: ChalkSchema = {
   softness: field.number({
     label: 'Softness',
     description: 'The width of the feathered edge. The value 0 gives a crisp edge.',
-    default: 0.5,
+    default: 0.65,
     min: 0,
     max: 1,
     step: 0.05,
@@ -69,7 +69,7 @@ export const chalkSchema: ChalkSchema = {
   taper: field.number({
     label: 'Taper',
     description: 'The length of the thin tips at the two ends of the stroke.',
-    default: 0.6,
+    default: 0.25,
     min: 0,
     max: 1,
     step: 0.05,
@@ -77,7 +77,7 @@ export const chalkSchema: ChalkSchema = {
   fadeRate: field.number({
     label: 'Chalk vanish speed',
     description: 'The speed at which a finished stroke disappears.',
-    default: 0.005,
+    default: 0.039,
     min: 0.001,
     max: 0.05,
     step: 0.001,

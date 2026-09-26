@@ -26,20 +26,20 @@ describe('glitterEffect', () => {
     expect(effect.layer).toBe(20);
     expect(effect.composite).toBe('lighter');
     expect(defaultsOf(glitterSchema)).toEqual({
-      size: 10,
-      spawnRate: 4,
+      size: 6,
+      spawnRate: 3,
       gravity: 0.02,
-      friction: 0.98,
+      friction: 0.94,
       fadeRate: 0.015,
-      twinkle: 6,
+      twinkle: 5,
       color: '#ffffff',
-      maxParticles: 2000,
+      maxParticles: 979,
     });
   });
 
-  it('spawns from 4 to 5 particles for each burst with the defaults', () => {
+  it('spawns from 4 to 5 particles for each burst with a spawn rate of 4', () => {
     for (let seed = 0; seed < 5; seed++) {
-      const { effect, context } = setup({ twinkle: 1 });
+      const { effect, context } = setup({ spawnRate: 4, twinkle: 1 });
       for (let i = 0; i < seed; i++) context.random();
       context.bus.emit('burst', { x: 50, y: 50, strength: 1 });
       const count = drawCalls(effect, 0).length;

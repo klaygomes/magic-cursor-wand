@@ -1,7 +1,3 @@
-/*
-  Palette and type come from estacouveflor.com.
-  Radius system: buttons and keys are pills, surfaces are 20px, code blocks are 12px.
-*/
 @import "@fontsource/rubik/latin-400.css";
 @import "@fontsource/rubik/latin-800.css";
 @import "@fontsource/molengo/latin-400.css";
@@ -29,7 +25,7 @@
   --radius-code: 12px;
   --shadow-surface: 0 1px 0 rgba(243, 232, 255, 0.06) inset, 0 24px 48px -24px rgba(12, 1, 22, 0.8);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --page-width: min(100% - 32px, 1200px);
+  --page-width: min(100% - 32px, 1520px);
 
   --tp-base-background-color: var(--purple-900);
   --tp-base-shadow-color: rgba(12, 1, 22, 0.45);
@@ -165,10 +161,29 @@ kbd {
   background: linear-gradient(90deg, var(--yellow) 66.66%, var(--pink) 0);
 }
 
-main {
+.layout {
   flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  align-items: start;
+  gap: 40px;
   width: var(--page-width);
   margin: 0 auto;
+}
+
+main {
+  min-width: 0;
+}
+
+.settings-dock {
+  position: sticky;
+  top: 84px;
+  max-height: calc(100dvh - 100px);
+  margin-top: 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: var(--radius-code);
+  box-shadow: 0 24px 48px -12px rgba(12, 1, 22, 0.7);
 }
 
 .hero {
@@ -181,7 +196,7 @@ main {
 }
 
 .hero h1 {
-  font-size: clamp(2.75rem, 5.6vw, 4.75rem);
+  font-size: clamp(2.5rem, 4.2vw, 3.75rem);
   line-height: 1.02;
 }
 
@@ -487,17 +502,6 @@ kbd {
   color: var(--purple-100);
 }
 
-/* The panel plugin places its box with inline styles. This demo moves it under the sticky header. */
-body > div:has(> .tp-rotv) {
-  /* biome-ignore lint/complexity/noImportantStyles: only !important overrides an inline style */
-  top: 84px !important;
-  /* biome-ignore lint/complexity/noImportantStyles: only !important overrides an inline style */
-  max-height: calc(100dvh - 100px) !important;
-  overscroll-behavior: contain;
-  border-radius: var(--radius-code);
-  box-shadow: 0 24px 48px -12px rgba(12, 1, 22, 0.7);
-}
-
 @media (prefers-reduced-motion: no-preference) {
   [data-reveal] {
     opacity: 0;
@@ -522,6 +526,18 @@ body > div:has(> .tp-rotv) {
 
   .hero .slate {
     transition-delay: 0.1s;
+  }
+}
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .settings-dock {
+    position: static;
+    max-height: none;
+    margin: 80px 0 0;
   }
 }
 

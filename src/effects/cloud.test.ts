@@ -28,12 +28,12 @@ describe('cloudEffect', () => {
     expect(effect.layer).toBe(0);
     expect(effect.composite).toBe('source-over');
     expect(defaultsOf(cloudSchema)).toEqual({
-      size: 40,
-      density: 0.4,
-      bounce: 60,
-      spread: 30,
-      fadeRate: 0.015,
-      color: '#ffffff',
+      size: 18,
+      density: 0.25,
+      bounce: 26,
+      spread: 50,
+      fadeRate: 0.01,
+      color: '#fad30b',
       maxClouds: 300,
     });
   });

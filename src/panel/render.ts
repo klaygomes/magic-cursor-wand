@@ -5,7 +5,7 @@ const EXPORT_FILE_NAME = 'magic-cursor-wand.json';
 
 /** The actions of the panel buttons that are not part of the model. */
 export interface PaneActions {
-  readonly close: () => void;
+  readonly close?: () => void;
   readonly importFile: () => void;
   readonly exportFile: () => void;
 }
@@ -113,7 +113,7 @@ export function renderPane(
   pane.addButton({ title: 'Reset' }).on('click', () => model.reset());
   pane.addButton({ title: 'Import' }).on('click', actions.importFile);
   pane.addButton({ title: 'Export' }).on('click', actions.exportFile);
-  pane.addButton({ title: 'Close' }).on('click', actions.close);
+  if (actions.close) pane.addButton({ title: 'Close' }).on('click', actions.close);
 
   return {
     element: pane.element,

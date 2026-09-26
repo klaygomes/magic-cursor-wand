@@ -1,6 +1,6 @@
 # Decrease the motion
 
-Use this procedure to control the motion of the effects. By default, the wand obeys the `prefers-reduced-motion` media query of the visitor.
+Use this procedure to control the motion of the effects. The default value of `theme.motion` is `full`. To obey the `prefers-reduced-motion` media query of the visitor, set the value `auto`.
 
 ## Procedure
 

@@ -141,7 +141,7 @@ describe('schema composition', () => {
     expect(store.sections.map((section) => section.name)).toEqual(['theme', 'chalk', 'glitter']);
     expect(Object.keys(store.sections[1]?.schema ?? {})).toEqual(['enabled', 'size', 'color']);
     expect(store.get()).toEqual({
-      theme: { color: '#ffffff', motion: 'auto', maxDpr: 2 },
+      theme: { color: '#fad30b', motion: 'full', maxDpr: 1.5 },
       chalk: { enabled: true, size: 15, color: null },
       glitter: { enabled: true, maxParticles: 300 },
     });
@@ -149,7 +149,7 @@ describe('schema composition', () => {
 
   it('does not add the enabled field to the theme section', () => {
     const { store } = setup({ sections: [] });
-    expect(store.get()).toEqual({ theme: { color: '#ffffff', motion: 'auto', maxDpr: 2 } });
+    expect(store.get()).toEqual({ theme: { color: '#fad30b', motion: 'full', maxDpr: 1.5 } });
   });
 
   it('applies the config layer over the defaults', () => {
@@ -234,7 +234,7 @@ describe('validation', () => {
     const { store, errors } = setup({ defaults: { chalk: { size: Number.NaN } } });
     store.set({ theme: { motion: 'fast' as never } });
     expect(errors.map((error) => error.source)).toEqual(['config', 'setConfig']);
-    expect(store.get().theme.motion).toBe('auto');
+    expect(store.get().theme.motion).toBe('full');
   });
 
   it('rejects documents with a missing or non-numeric version', async () => {
@@ -273,7 +273,7 @@ describe('unknown sections', () => {
     expect(store.get()).not.toHaveProperty('sparkles');
     expect(store.export()).toEqual({
       v: 1,
-      theme: { color: '#ffffff', motion: 'auto', maxDpr: 2 },
+      theme: { color: '#fad30b', motion: 'full', maxDpr: 1.5 },
       chalk: { enabled: true, size: 20, color: null },
       glitter: { enabled: true, maxParticles: 300 },
       sparkles: { density: 3, nested: { a: [1, 2] } },

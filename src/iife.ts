@@ -22,6 +22,7 @@ const AUTO_START_KEYS = [
   'wandStorageKey',
   'wandCursor',
   'wandPanelHotkey',
+  'wandPanel',
 ] as const;
 
 function loadTweakpaneFromCdn(): Promise<TweakpaneModule> {
@@ -36,6 +37,28 @@ function loadTweakpaneFromCdn(): Promise<TweakpaneModule> {
  */
 export function panelPlugin(options: PanelPluginOptions = {}): PanelPlugin {
   return createPanelPlugin({ load: loadTweakpaneFromCdn, ...options });
+}
+
+function listOf(value: string | undefined): string[] | undefined {
+  const items = value
+    ?.split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+  return items && items.length > 0 ? items : undefined;
+}
+
+function panelFromAttributes(dataset: DOMStringMap): PanelPlugin | undefined {
+  if (dataset.wandPanel === undefined && !dataset.wandPanelHotkey) return undefined;
+  const container = dataset.wandPanelContainer
+    ? document.querySelector<HTMLElement>(dataset.wandPanelContainer)
+    : null;
+  const expanded = listOf(dataset.wandPanelExpanded);
+  return panelPlugin({
+    ...(dataset.wandPanelHotkey ? { hotkey: dataset.wandPanelHotkey } : {}),
+    ...(container ? { container } : {}),
+    ...(expanded ? { expanded } : {}),
+    ...(dataset.wandPanel === 'open' ? { closable: false } : {}),
+  });
 }
 
 /**
@@ -56,9 +79,12 @@ export function startFromAttributes(dataset: DOMStringMap): Wand | undefined {
   if (dataset.wandCursor !== undefined) {
     plugins.push(cursorPlugin({ mode: dataset.wandCursor === 'replace' ? 'replace' : 'glow' }));
   }
-  if (dataset.wandPanelHotkey) plugins.push(panelPlugin({ hotkey: dataset.wandPanelHotkey }));
+  const panel = panelFromAttributes(dataset);
+  if (panel) plugins.push(panel);
 
-  return createWand({ providers, plugins }) as unknown as Wand;
+  const wand = createWand({ providers, plugins }) as unknown as Wand;
+  if (panel && dataset.wandPanel === 'open') void panel.open();
+  return wand;
 }
 
 function autoStart(script: HTMLOrSVGScriptElement | null): void {

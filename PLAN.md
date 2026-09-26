@@ -281,3 +281,6 @@ Port each effect from the demo. Keep the demo values as the defaults.
 | 2026-09-26 | A pixel snapshot is a grid of the mean alpha of each 10 by 10 pixel cell, in `src/effects/__pixels__`. A test accepts a difference of at most 8 in each cell, so one snapshot is correct for Chromium, Firefox and WebKit. |
 | 2026-09-26 | The cloud pixel snapshot accepts a difference of at most 14, because the cloud effect stacks many layers with low alpha. |
 | 2026-09-26 | The workflows `release.yml` and `preview.yml` call `ci.yml`. A release or a preview starts only after CI passes. |
+| 2026-09-27 | New default values: theme color `#fad30b`, motion `full`, maximum pixel ratio 1.5, and new values for the cloud, chalk and glitter effects. The owner of the project selected them in the settings panel. Sites that must obey `prefers-reduced-motion` set `theme.motion` to `auto`. |
+| 2026-09-27 | The panel plugin has the options `expanded` and `closable`. The script tag build accepts `data-wand-panel`, `data-wand-panel-container` and `data-wand-panel-expanded`. |
+| 2026-09-27 | The input sends pointer events to the plugins also when the effects stop. Thus the cursor plugin shows the pointer when the motion is `off`. |

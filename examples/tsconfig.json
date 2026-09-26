@@ -3,7 +3,7 @@
   "compilerOptions": {
     "isolatedDeclarations": false,
     "declaration": false,
-    "types": [],
+    "types": ["vite/client"],
     "paths": {
       "magic-cursor-wand": ["../src/index.ts"],
       "magic-cursor-wand/providers": ["../src/providers/index.ts"],

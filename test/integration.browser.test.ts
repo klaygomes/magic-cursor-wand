@@ -80,7 +80,7 @@ describe('createWand with the default effects', () => {
   it('gives resolved values and the theme to the configuration', () => {
     const wand = track(createWand({ scheduler: createManualScheduler(), silent: true }));
     const config = wand.getConfig();
-    expect(config.theme.color).toBe('#ffffff');
+    expect(config.theme.color).toBe('#fad30b');
     expect(config.chalk.enabled).toBe(true);
     expect(wand.sections.map((section) => section.name)).toEqual([
       'theme',
