@@ -35,6 +35,7 @@ export interface TweakpanePane extends TweakpaneContainer {
 export interface TweakpaneModule {
   readonly Pane: new (config: {
     container?: HTMLElement;
+    document?: Document;
     title?: string;
     expanded?: boolean;
   }) => TweakpanePane;

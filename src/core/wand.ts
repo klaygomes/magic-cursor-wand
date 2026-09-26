@@ -4,12 +4,14 @@ import { chalkEffect, cloudEffect, glitterEffect } from '../effects';
 import { createWandWith, type EngineOptions } from './engine';
 import type { Effect, Plugin, Wand, WandOptions } from './types';
 
+/** The types of the default effects: cloud, chalk and glitter. */
 export type DefaultEffects = [
   ReturnType<typeof cloudEffect>,
   ReturnType<typeof chalkEffect>,
   ReturnType<typeof glitterEffect>,
 ];
 
+/** The options of `createWand`, with the effect and plugin types for the configuration type. */
 export type CreateWandOptions<
   E extends readonly Effect[],
   P extends readonly Plugin[],

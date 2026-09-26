@@ -52,6 +52,7 @@ interface Mounted {
   readonly fileInput: HTMLInputElement;
   readonly launcher: HTMLButtonElement | undefined;
   readonly cleanups: (() => void)[];
+  readonly reportError: (error: unknown) => void;
   pane: RenderedPane | undefined;
   loading: Promise<TweakpaneModule> | undefined;
 }
@@ -112,10 +113,6 @@ function createLauncher(doc: Document): HTMLButtonElement {
   return button;
 }
 
-function warn(message: string, cause: unknown): void {
-  console.warn(`magic-cursor-wand: ${message}`, cause);
-}
-
 /**
  * Create a plugin that shows a settings panel with Tweakpane 4. The plugin loads Tweakpane when the panel opens for the first time.
  *
@@ -142,9 +139,13 @@ export function panelPlugin(options: PanelPluginOptions = {}): PanelPlugin {
     state.fileInput.value = '';
     if (!file) return;
     try {
-      state.model.importJson(await file.text());
+      if (!state.model.importJson(await file.text())) {
+        state.reportError(
+          new Error(`The file "${file.name}" does not contain JSON that is valid.`),
+        );
+      }
     } catch (error) {
-      warn('The panel cannot read the file.', error);
+      state.reportError(error);
     }
   };
 
@@ -187,7 +188,7 @@ export function panelPlugin(options: PanelPluginOptions = {}): PanelPlugin {
         show(state, true);
       } catch (error) {
         if (mounted === state) isOpen = false;
-        warn('The settings panel cannot load Tweakpane.', error);
+        state.reportError(error);
       }
     },
     close() {
@@ -215,6 +216,7 @@ export function panelPlugin(options: PanelPluginOptions = {}): PanelPlugin {
         fileInput,
         launcher,
         cleanups: [],
+        reportError: (error) => context.reportError(error),
         pane: undefined,
         loading: undefined,
       };

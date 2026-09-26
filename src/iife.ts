@@ -69,7 +69,7 @@ function autoStart(script: HTMLOrSVGScriptElement | null): void {
     try {
       startFromAttributes(dataset);
     } catch (error) {
-      console.warn('magic-cursor-wand: The script element cannot start a wand.', error);
+      console.warn('[magic-cursor-wand] The script element cannot start a wand.', error);
     }
   };
   if (document.readyState === 'loading') {

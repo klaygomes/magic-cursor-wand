@@ -146,7 +146,7 @@ describe('chalkEffect', () => {
 
   it('makes a short dot and a burst for a tap', () => {
     const { effect, context } = setup();
-    effect.pointer?.(pointerAt('tap', 30, 40, { pointerType: 'touch', drawing: false }));
+    effect.pointer?.(pointerAt('tap', 30, 40, { pointerType: 'touch', drawing: true }));
     expect(context.bus.bursts).toEqual([{ x: 30, y: 40, strength: 1 }]);
     effect.update(frameAt(0));
     const circles = arcs(effect, frameAt(0)).arcs;
@@ -157,6 +157,13 @@ describe('chalkEffect', () => {
       expect(Math.abs(y - 40)).toBeLessThan(1);
     }
     for (let i = 1; i < 600 && !effect.isIdle(); i++) effect.update(frameAt(i));
+    expect(effect.isIdle()).toBe(true);
+  });
+
+  it('makes only a burst for a tap that does not draw', () => {
+    const { effect, context } = setup();
+    effect.pointer?.(pointerAt('tap', 30, 40, { pointerType: 'touch', drawing: false }));
+    expect(context.bus.bursts).toEqual([{ x: 30, y: 40, strength: 1 }]);
     expect(effect.isIdle()).toBe(true);
   });
 

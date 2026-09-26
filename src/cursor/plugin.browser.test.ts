@@ -36,6 +36,9 @@ function createHarness(mode: SurfaceInfo['mode'] = 'overlay', element = document
         pointerHandlers.delete(handler);
       };
     },
+    reportError(error) {
+      throw error;
+    },
   };
   return {
     context,

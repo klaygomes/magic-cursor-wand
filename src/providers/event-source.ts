@@ -28,11 +28,17 @@ export interface EventSourceProviderOptions {
 
 type Parsed = { ok: true; document: ConfigDocument } | { ok: false; error: unknown };
 
+interface Subscriber {
+  readonly onChange: (document: ConfigDocument | null) => void;
+  readonly onError: ((error: unknown) => void) | undefined;
+}
+
 /**
  * Create a provider that gets the configuration document from a server-sent event stream.
  *
  * @remarks
  * Each message contains a full document. `load` resolves with the first message.
+ * A message that is not a valid document goes to the error handler of each subscriber.
  * The provider closes the stream when the last subscriber leaves or when the `load`
  * signal aborts.
  *
@@ -46,7 +52,7 @@ type Parsed = { ok: true; document: ConfigDocument } | { ok: false; error: unkno
 export function eventSourceProvider(options: EventSourceProviderOptions): ConfigProvider {
   const { url } = options;
   const name = options.name ?? 'sse';
-  const subscribers = new Set<(document: ConfigDocument | null) => void>();
+  const subscribers = new Set<Subscriber>();
   const waiters = new Set<(parsed: Parsed) => void>();
   let source: EventSourceLike | undefined;
 
@@ -61,8 +67,10 @@ export function eventSourceProvider(options: EventSourceProviderOptions): Config
   const onMessage = (event: Event): void => {
     const parsed = parse((event as MessageEvent).data);
     for (const waiter of [...waiters]) waiter(parsed);
-    if (!parsed.ok) return;
-    for (const subscriber of [...subscribers]) subscriber(parsed.document);
+    for (const subscriber of [...subscribers]) {
+      if (parsed.ok) subscriber.onChange(parsed.document);
+      else subscriber.onError?.(parsed.error);
+    }
   };
 
   const onError = (): void => {
@@ -125,8 +133,8 @@ export function eventSourceProvider(options: EventSourceProviderOptions): Config
       });
     },
 
-    subscribe(onChange) {
-      const subscriber = (document: ConfigDocument | null): void => onChange(document);
+    subscribe(onChange, onError) {
+      const subscriber: Subscriber = { onChange, onError };
       subscribers.add(subscriber);
       try {
         open();

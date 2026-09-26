@@ -88,4 +88,21 @@ describe('compositeProvider', () => {
     expect(low.listeners.size).toBe(0);
     expect(high.listeners.size).toBe(0);
   });
+
+  it('sends the errors of each child subscription to the error handler', () => {
+    let childError: ((error: unknown) => void) | undefined;
+    const child: ConfigProvider = {
+      name: 'child',
+      load: async () => null,
+      subscribe: (_onChange, onError) => {
+        childError = onError;
+        return () => {};
+      },
+    };
+    const onError = vi.fn();
+    compositeProvider('wrap', [child]).subscribe?.(() => {}, onError);
+    const cause = new Error('Poll failed.');
+    childError?.(cause);
+    expect(onError).toHaveBeenCalledExactlyOnceWith(cause);
+  });
 });

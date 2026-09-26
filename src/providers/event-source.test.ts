@@ -128,6 +128,20 @@ describe('eventSourceProvider', () => {
     expect(source().closed).toBe(true);
   });
 
+  it('sends a message that is not a valid document to the error handler', () => {
+    const { provider, source } = setup();
+    const onChange = vi.fn();
+    const onError = vi.fn();
+    const stop = provider.subscribe?.(onChange, onError);
+    source().emit('not json');
+    source().emit('{"size":5}');
+    source().emit('{"v":1}');
+    expect(onError).toHaveBeenCalledTimes(2);
+    expect(String(onError.mock.calls[1]?.[0])).toMatch(/"sse".*not valid/);
+    expect(onChange).toHaveBeenCalledExactlyOnceWith({ v: 1 });
+    stop?.();
+  });
+
   it('opens a new source for a later subscriber', () => {
     const { provider } = setup();
     provider.subscribe?.(() => {})();

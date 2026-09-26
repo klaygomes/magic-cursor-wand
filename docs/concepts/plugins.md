@@ -25,7 +25,7 @@ For a procedure, read [Open the settings panel](/how-to/open-the-panel).
 
 ## Your own plugin
 
-A plugin has a `name`, a `schema` and a `setup` function. The `setup` function gets a context with the wand, the event bus, the surface and a pointer listener.
+A plugin has a `name`, a `schema` and a `setup` function. The `setup` function gets a context with the wand, the event bus, the surface, a pointer listener and the function `reportError`. Give each error that the plugin catches to `reportError`. The wand then emits an `effect` error with the name of the plugin.
 
 <<< @/snippets/plugin.ts#plugin
 

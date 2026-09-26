@@ -3,7 +3,7 @@ import type { WandError } from '../config/types';
 import type { AnyConfig } from './engine';
 import { createManualScheduler } from './scheduler';
 import { createTestWand, type DrawRecord, fakeEffect } from './test-support';
-import type { Wand } from './types';
+import type { Plugin, PluginContext, Wand } from './types';
 
 const wands: Wand<AnyConfig>[] = [];
 const elements: HTMLElement[] = [];
@@ -192,6 +192,31 @@ describe('frame loop', () => {
     expect(warnings).toHaveLength(1);
   });
 
+  it('emits the errors that a plugin reports', () => {
+    const scheduler = createManualScheduler();
+    const cause = new Error('Load failed.');
+    let context: PluginContext | undefined;
+    const plugin: Plugin = {
+      name: 'widget',
+      schema: {},
+      setup(pluginContext) {
+        context = pluginContext;
+      },
+    };
+    const wand = track(createTestWand({ plugins: [plugin], scheduler, silent: true }));
+    const errors: WandError[] = [];
+    wand.on('error', (error) => errors.push(error));
+    context?.reportError(cause);
+    expect(errors).toEqual([
+      {
+        kind: 'effect',
+        source: 'widget',
+        message: 'The section "widget" failed. The engine continues to operate.',
+        cause,
+      },
+    ]);
+  });
+
   it('sleeps when all effects are idle and wakes on pointer input', () => {
     const scheduler = createManualScheduler();
     const effect = fakeEffect('fx');
@@ -247,6 +272,28 @@ describe('frame loop', () => {
     wand.setConfig({ theme: { motion: 'full' } });
     scheduler.advance();
     expect(effect.frames[1]?.reducedMotion).toBe(false);
+  });
+
+  it('follows prefers-reduced-motion for motion auto and its changes', () => {
+    const query = Object.assign(new EventTarget(), {
+      matches: true,
+      media: '(prefers-reduced-motion: reduce)',
+    });
+    const original = window.matchMedia;
+    window.matchMedia = () => query as unknown as MediaQueryList;
+    try {
+      const scheduler = createManualScheduler();
+      const effect = fakeEffect('fx');
+      track(createTestWand({ effects: [effect], scheduler }));
+      scheduler.advance();
+      expect(effect.frames[0]?.reducedMotion).toBe(true);
+      query.matches = false;
+      query.dispatchEvent(new Event('change'));
+      scheduler.advance();
+      expect(effect.frames[1]?.reducedMotion).toBe(false);
+    } finally {
+      window.matchMedia = original;
+    }
   });
 
   it('delays the first frame for startAfter in milliseconds', () => {

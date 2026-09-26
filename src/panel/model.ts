@@ -1,5 +1,6 @@
 import { field } from '../config/field';
-import type { ConfigPatch, Field, Schema, Section } from '../config/types';
+import { theme } from '../config/theme';
+import type { ConfigPatch, Field, Section } from '../config/types';
 import type { Wand } from '../core/types';
 
 interface ControlBase<K extends string, V> {
@@ -61,29 +62,6 @@ export interface PanelModel {
 
 const THEME = 'theme';
 const PANEL = 'panel';
-const DEFAULT_THEME_COLOR = '#ffffff';
-
-const fallbackThemeSchema: Schema = {
-  color: field.color({
-    label: 'Color',
-    description: 'The main color of all effects.',
-    default: DEFAULT_THEME_COLOR,
-  }),
-  motion: field.enum({
-    label: 'Motion',
-    description: 'The motion level. The value auto follows the system setting.',
-    default: 'auto',
-    options: ['auto', 'full', 'reduced', 'off'],
-  }),
-  maxDpr: field.number({
-    label: 'Maximum pixel ratio',
-    description: 'The maximum device pixel ratio of the canvas.',
-    default: 2,
-    min: 1,
-    max: 3,
-    step: 0.5,
-  }),
-};
 
 const enabledField = field.boolean({
   label: 'Enabled',
@@ -99,14 +77,11 @@ function titleOf(name: string): string {
 }
 
 function orderedSections(sections: readonly Section[]): Section[] {
-  const theme = sections.find((section) => section.name === THEME) ?? {
-    name: THEME,
-    schema: fallbackThemeSchema,
-  };
+  const themeSection = sections.find((section) => section.name === THEME) ?? theme;
   const others = sections.filter(
     (section) => section.name !== THEME && Object.keys(section.schema).length > 0,
   );
-  return [theme, ...others];
+  return [themeSection, ...others];
 }
 
 function controlOf(
@@ -187,7 +162,7 @@ export function panelModel<C>(wand: Wand<C>): PanelModel {
     get groups(): readonly PanelGroup[] {
       const config = readConfig();
       const themeColor = config[THEME]?.color;
-      const inherited = typeof themeColor === 'string' ? themeColor : DEFAULT_THEME_COLOR;
+      const inherited = typeof themeColor === 'string' ? themeColor : theme.schema.color.default;
       const shown = orderedSections(wand.sections).filter((section) => section.name !== PANEL);
       return shown.map((section) => {
         const values = config[section.name] ?? {};

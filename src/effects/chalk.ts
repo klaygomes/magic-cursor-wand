@@ -369,7 +369,8 @@ export function chalkEffect(): Effect<'chalk', typeof chalkSchema> {
           endStroke();
           break;
         case 'tap':
-          addDot(event.x, event.y, config?.size ?? chalkSchema.size.default);
+          if (event.drawing) addDot(event.x, event.y, config?.size ?? chalkSchema.size.default);
+          else emitBurst(event.x, event.y);
           break;
       }
     },

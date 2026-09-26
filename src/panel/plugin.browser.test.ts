@@ -112,30 +112,33 @@ const sections: Section[] = [
   { name: 'panel', schema: {} },
 ];
 
-function createContext(wand: FakeWand): PluginContext {
+const reported: unknown[] = [];
+
+function createContext(wand: FakeWand, element: HTMLElement = document.body): PluginContext {
   return {
     wand,
     bus: { emit() {}, on: () => () => {} },
     surface: {
       mode: 'overlay',
-      element: document.body,
+      element,
       canvas: document.createElement('canvas'),
       toClient: (point) => point,
     },
     onPointer: () => () => {},
+    reportError: (error) => reported.push(error),
   };
 }
 
 let active: PanelPlugin | undefined;
 
-function setup(options: PanelPluginOptions = {}) {
+function setup(options: PanelPluginOptions = {}, element?: HTMLElement) {
   const wand = createFakeWand(sections, {
     theme: { color: '#445566', motion: 'auto', maxDpr: 2 },
     chalk: { enabled: true, size: 15, color: null, shape: 'round' },
   });
   const load = vi.fn(async () => fakeTweakpane);
   const plugin = panelPlugin({ load, ...options });
-  plugin.setup(createContext(wand));
+  plugin.setup(createContext(wand, element));
   active = plugin;
   return { wand, load, plugin };
 }
@@ -154,6 +157,7 @@ afterEach(() => {
   active?.destroy?.();
   active = undefined;
   FakePane.instances = [];
+  reported.length = 0;
   vi.restoreAllMocks();
   document.body.replaceChildren();
 });
@@ -270,6 +274,16 @@ describe('panelPlugin', () => {
     input.dispatchEvent(new Event('change'));
     await vi.waitFor(() => expect(wand.imported).toEqual([{ v: 1, chalk: { size: 33 } }]));
 
+    const broken = new DataTransfer();
+    broken.items.add(new File(['{bad'], 'broken.json'));
+    input.files = broken.files;
+    input.dispatchEvent(new Event('change'));
+    await vi.waitFor(() => expect(reported).toHaveLength(1));
+    expect(String(reported[0])).toContain(
+      'The file "broken.json" does not contain JSON that is valid.',
+    );
+    expect(wand.imported).toHaveLength(1);
+
     pane.buttons.get('Close')?.click();
     expect(plugin.isOpen).toBe(false);
   });
@@ -333,16 +347,18 @@ describe('panelPlugin', () => {
     expect(container.contains(lastPane().element)).toBe(true);
   });
 
-  it('stays closed and allows a retry when the loader fails', async () => {
+  it('stays closed, reports the error and allows a retry when the loader fails', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const offline = new Error('offline');
     const load = vi
       .fn<() => Promise<TweakpaneModule>>()
-      .mockRejectedValueOnce(new Error('offline'))
+      .mockRejectedValueOnce(offline)
       .mockResolvedValue(fakeTweakpane);
     const { plugin } = setup({ load });
     await plugin.open();
     expect(plugin.isOpen).toBe(false);
-    expect(warn).toHaveBeenCalledTimes(1);
+    expect(reported).toEqual([offline]);
+    expect(warn).not.toHaveBeenCalled();
     await plugin.open();
     expect(plugin.isOpen).toBe(true);
   });
@@ -376,5 +392,32 @@ describe('panelPlugin with the real Tweakpane package', () => {
     expect(style?.textContent?.length).toBeGreaterThan(0);
     plugin.destroy?.();
     expect(document.querySelector('.tp-rotv')).toBeNull();
+  });
+
+  it('applies the Tweakpane styles under a strict Content Security Policy only with the nonce', async () => {
+    const fontSize = async (nonce: string | undefined): Promise<string> => {
+      const frame = document.createElement('iframe');
+      frame.srcdoc = `<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="style-src 'nonce-abc123'"></head><body></body></html>`;
+      const loaded = new Promise((resolve) =>
+        frame.addEventListener('load', resolve, { once: true }),
+      );
+      document.body.appendChild(frame);
+      await loaded;
+      const body = frame.contentDocument?.body;
+      if (!body) throw new Error('The frame has no body.');
+      const { plugin } = setup(
+        { load: async () => tweakpanePackage, ...(nonce ? { nonce } : {}) },
+        body,
+      );
+      await plugin.open();
+      const root = body.querySelector('.tp-rotv');
+      if (!root) throw new Error('The pane is missing.');
+      const size = frame.contentWindow?.getComputedStyle(root).fontSize ?? '';
+      plugin.destroy?.();
+      frame.remove();
+      return size;
+    };
+    expect(await fontSize(undefined)).not.toBe('11px');
+    expect(await fontSize('abc123')).toBe('11px');
   });
 });

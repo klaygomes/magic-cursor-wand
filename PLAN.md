@@ -274,3 +274,7 @@ Port each effect from the demo. Keep the demo values as the defaults.
 | 2026-09-26 | The engine and the store are 8 kB gzip. The default effects add 6.5 kB. The size limit of the main entry with the default effects is 13 kB. The size limit of the React entry includes the core. |
 | 2026-09-26 | The `theme` section is in `src/config/theme.ts`. The engine and the panel use it. |
 | 2026-09-26 | The script tag build also accepts `data-wand-sse-url` and `data-wand-panel-hotkey`. |
+| 2026-09-26 | `ConfigProvider.subscribe` gets a second, optional argument `onError`. The HTTP provider sends a poll that fails to it. The SSE provider sends a message that is not valid to it. The store emits a `provider` error. |
+| 2026-09-26 | `PluginContext` has the function `reportError`. The panel sends the errors of Tweakpane loads and file imports to it, so the option `silent` also applies to plugins. |
+| 2026-09-26 | A tap makes a chalk dot only if `shouldDraw` accepts it. A tap on a link or a button makes only a `burst` event. |
+| 2026-09-26 | A pixel snapshot is a grid of the mean alpha of each 10 by 10 pixel cell, in `src/effects/__pixels__`. A test accepts a difference of at most 8 in each cell, so one snapshot is correct for Chromium, Firefox and WebKit. |

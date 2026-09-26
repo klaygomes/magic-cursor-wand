@@ -93,7 +93,12 @@ export function renderPane(
   title: string,
   actions: PaneActions,
 ): RenderedPane {
-  const pane = new tweakpane.Pane({ container, title, expanded: true });
+  const pane = new tweakpane.Pane({
+    container,
+    document: container.ownerDocument,
+    title,
+    expanded: true,
+  });
   const binder: Binder = { guard: { syncing: false }, model };
   const syncs = new Map<string, Sync>();
 

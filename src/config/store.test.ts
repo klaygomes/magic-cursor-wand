@@ -49,6 +49,7 @@ interface FakeProvider extends ConfigProvider {
   readonly saved: ConfigDocument[];
   readonly signals: AbortSignal[];
   emit(document: ConfigDocument | null): void;
+  fail(error: unknown): void;
   failNextSave(): void;
 }
 
@@ -64,6 +65,7 @@ function fakeProvider(name: string, options: FakeOptions = {}): FakeProvider {
   const saved: ConfigDocument[] = [];
   const signals: AbortSignal[] = [];
   let listener: ((document: ConfigDocument | null) => void) | undefined;
+  let errorListener: ((error: unknown) => void) | undefined;
   let failSave = false;
   const provider: FakeProvider = {
     name,
@@ -75,6 +77,9 @@ function fakeProvider(name: string, options: FakeOptions = {}): FakeProvider {
     },
     emit(document) {
       listener?.(document);
+    },
+    fail(error) {
+      errorListener?.(error);
     },
     failNextSave() {
       failSave = true;
@@ -92,10 +97,12 @@ function fakeProvider(name: string, options: FakeOptions = {}): FakeProvider {
     },
   };
   const watchable: Partial<ConfigProvider> = {
-    subscribe(onChange) {
+    subscribe(onChange, onError) {
       listener = onChange;
+      errorListener = onError;
       return () => {
         listener = undefined;
+        errorListener = undefined;
       };
     },
   };
@@ -495,6 +502,26 @@ describe('echo prevention', () => {
     local.emit({ chalk: { size: 2 } } as never);
     expect(store.get().chalk.size).toBe(30);
     expect(errors[0]?.kind).toBe('validation');
+  });
+
+  it('reports a provider error from a subscription and keeps the slot', async () => {
+    const remote = fakeProvider('remote', { watch: true, document: { v: 1, chalk: { size: 30 } } });
+    const { store, errors } = setup({ providers: [remote] });
+    await store.ready;
+    const cause = new Error('Poll failed');
+    remote.fail(cause);
+    expect(store.get().chalk.size).toBe(30);
+    expect(errors).toEqual([
+      {
+        kind: 'provider',
+        source: 'remote',
+        message: 'The provider "remote" cannot read a change of the configuration.',
+        cause,
+      },
+    ]);
+    store.destroy();
+    remote.fail(cause);
+    expect(errors).toHaveLength(1);
   });
 });
 

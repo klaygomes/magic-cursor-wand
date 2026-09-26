@@ -52,13 +52,13 @@ export function compositeProvider(
 
   const observable = providers.filter((child) => child.subscribe !== undefined);
   if (observable.length > 0) {
-    provider.subscribe = (onChange) => {
+    provider.subscribe = (onChange, onError) => {
       const unsubscribers = providers.map(
         (child, index) =>
           child.subscribe?.((document) => {
             slots[index] = document;
             onChange(merged());
-          }) ?? (() => {}),
+          }, onError) ?? (() => {}),
       );
       return () => {
         for (const unsubscribe of unsubscribers) unsubscribe();

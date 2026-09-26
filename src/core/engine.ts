@@ -430,6 +430,7 @@ export function createWandWith(
         pointerHandlers.add(guarded);
         return () => pointerHandlers.delete(guarded);
       },
+      reportError: (error) => report(effectError(state.section.name, error)),
     };
     try {
       state.section.setup(pluginContext);

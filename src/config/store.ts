@@ -345,14 +345,25 @@ export function createConfigStore<C>(options: ConfigStoreOptions<C>): ConfigStor
     if (!provider.subscribe) return;
     try {
       unsubscribers.push(
-        provider.subscribe((document) => {
-          if (destroyed) return;
-          const layer = document === null ? {} : readDocument(document, provider.name);
-          if (!layer) return;
-          subscribed[index] = true;
-          slots[index] = layer;
-          recompute();
-        }),
+        provider.subscribe(
+          (document) => {
+            if (destroyed) return;
+            const layer = document === null ? {} : readDocument(document, provider.name);
+            if (!layer) return;
+            subscribed[index] = true;
+            slots[index] = layer;
+            recompute();
+          },
+          (cause) => {
+            if (destroyed) return;
+            report(
+              'provider',
+              provider.name,
+              `The provider "${provider.name}" cannot read a change of the configuration.`,
+              cause,
+            );
+          },
+        ),
       );
     } catch (cause) {
       report(

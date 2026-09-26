@@ -32,7 +32,8 @@ function isHidden(): boolean {
  * @remarks
  * A poll sends `If-None-Match` with the last ETag. The status 304 means no change.
  * The provider does not poll while `document.hidden` is true. A status that is not
- * 2xx makes the request reject.
+ * 2xx makes the request reject. A poll that fails keeps the last document, sends the
+ * error to the subscriber and tries again after `pollMs`.
  *
  * @param options - The URL, the headers, the poll interval and the save method.
  * @returns A provider that can load and, as configured, save and subscribe.
@@ -107,7 +108,7 @@ export function httpProvider(options: HttpProviderOptions): ConfigProvider {
   }
 
   if (pollMs !== undefined && pollMs > 0) {
-    provider.subscribe = (onChange) => {
+    provider.subscribe = (onChange, onError) => {
       let timer: ReturnType<typeof setTimeout> | undefined;
       let controller: AbortController | undefined;
       let active = true;
@@ -133,8 +134,8 @@ export function httpProvider(options: HttpProviderOptions): ConfigProvider {
             const next = await readDocument(response);
             if (active && snapshot.body !== previousBody) onChange(next);
           }
-        } catch {
-          // A failed poll keeps the last document. The next poll tries again.
+        } catch (error) {
+          if (active) onError?.(error);
         } finally {
           controller = undefined;
           schedule();

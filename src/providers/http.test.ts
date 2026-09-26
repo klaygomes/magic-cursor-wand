@@ -161,17 +161,43 @@ describe('httpProvider polling', () => {
     unsubscribe?.();
   });
 
-  it('keeps polling after a failed poll', async () => {
+  it('reports a failed poll and keeps polling', async () => {
     const fetch = fetchMock(
       () => json({}, { status: 503 }),
+      () => new Response('{bad'),
       () => json({ v: 2 }),
     );
     const provider = httpProvider({ url, fetch, pollMs: 100 });
     const onChange = vi.fn();
-    const unsubscribe = provider.subscribe?.(onChange);
-    await vi.advanceTimersByTimeAsync(200);
+    const onError = vi.fn();
+    const unsubscribe = provider.subscribe?.(onChange, onError);
+    await vi.advanceTimersByTimeAsync(100);
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError.mock.calls[0]?.[0]).toBeInstanceOf(Error);
+    expect(String(onError.mock.calls[0]?.[0])).toMatch('The server sent status 503.');
+    await vi.advanceTimersByTimeAsync(100);
+    expect(onError).toHaveBeenCalledTimes(2);
+    expect(String(onError.mock.calls[1]?.[0])).toMatch('JSON that is not valid');
+    await vi.advanceTimersByTimeAsync(100);
     expect(onChange).toHaveBeenCalledWith({ v: 2 });
+    expect(onError).toHaveBeenCalledTimes(2);
     unsubscribe?.();
+  });
+
+  it('does not report the abort of a poll after unsubscribe', async () => {
+    const fetch = vi.fn(
+      (_url: RequestInfo | URL, init?: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener('abort', () => reject(new Error('Aborted.')));
+        }),
+    );
+    const provider = httpProvider({ url, fetch, pollMs: 100 });
+    const onError = vi.fn();
+    const unsubscribe = provider.subscribe?.(() => {}, onError);
+    await vi.advanceTimersByTimeAsync(100);
+    unsubscribe?.();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(onError).not.toHaveBeenCalled();
   });
 
   it('pauses while the document is hidden and polls again when visible', async () => {

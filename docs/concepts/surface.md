@@ -16,7 +16,7 @@ If you give the `target` option, the mode is container mode. The wand attaches a
 
 <<< @/snippets/surface.ts#container
 
-The target element must have a position other than `static`. Otherwise the canvas does not align with the element.
+If the position of the target element is `static`, the wand sets the position `relative`. The `destroy` function restores the previous value.
 
 ## Positions and scroll
 
@@ -30,7 +30,7 @@ The canvas size is the CSS size multiplied by the device pixel ratio. The field 
 
 | Mode | Behavior |
 |---|---|
-| Overlay | Touch input does not stop the page scroll. A tap makes a short chalk dot and a burst of glitter. |
+| Overlay | Touch input does not stop the page scroll. A tap makes a burst of glitter. If `shouldDraw` accepts the tap, the tap also makes a short chalk dot. |
 | Container | The wand sets `touch-action: none` on the target. The option `touchAction` changes this value. |
 
 ## Chalk strokes
