@@ -34,7 +34,7 @@ The shared types are in `src/config/types.ts` and `src/core/types.ts`. Do not ch
 7. The default `zIndex` is `2147483647`.
 8. The canvas size is the CSS size multiplied by `min(devicePixelRatio, theme.maxDpr)`.
 
-## 4. Pointer input and drawing
+## 4. Pointer input and chalk strokes
 
 1. The engine uses Pointer Events only. It uses `getCoalescedEvents` if the browser supports it.
 2. The option `shouldDraw(event)` decides if a `pointerdown` starts a chalk stroke.
@@ -68,17 +68,17 @@ The store merges these layers. A later layer overrides an earlier layer, field b
 3. Each provider, in the order of `options.providers`.
 4. The runtime layer, from `setConfig`.
 
-Paths in `options.locked` (for example `glitter.maxParticles`) are removed from each provider layer and from the runtime layer.
+The store removes the paths in `options.locked` (for example `glitter.maxParticles`) from each provider layer and from the runtime layer.
 
-### 5.3 Loading
+### 5.3 Load
 
 1. The wand starts at once with layers 1 and 2.
 2. Each provider has one slot. When a provider result arrives, the store puts it in the slot and merges all layers again. Thus a slow provider with low precedence cannot override a fast provider with high precedence.
-3. `wand.ready` resolves when all providers are settled. It never rejects.
+3. `wand.ready` resolves after all providers settle. It never rejects.
 4. `startAfter: 'ready'` or `startAfter: <ms>` delays the first frame.
 5. On `destroy()`, the store stops all requests with an `AbortController`.
 
-### 5.4 Saving
+### 5.4 Save
 
 1. Autosave is always on. After `setConfig`, the store waits `autosaveDebounceMs` (default 500) and then saves.
 2. The store saves to the last provider that has a `save` method. `save({ to: name })` selects a different provider.
@@ -91,7 +91,7 @@ Paths in `options.locked` (for example `glitter.maxParticles`) are removed from 
 
 1. The format is `{ "v": 1, "<section>": { "<field>": value } }`.
 2. The core owns all migrations. The store applies the migrations in sequence from the document version to `CONFIG_VERSION`.
-3. The store keeps sections that it does not know. A remote document can contain settings for an effect that is not loaded.
+3. The store keeps sections that it does not know. A remote document can contain settings for an effect that the page does not load.
 4. The store ignores values that are not valid and emits a `validation` error.
 
 ## 6. Providers
@@ -100,7 +100,7 @@ Paths in `options.locked` (for example `glitter.maxParticles`) are removed from 
 |---|---|---|---|
 | `staticProvider(document)` | Returns the document | No | No |
 | `localStorageProvider({ key, storage })` | Reads the key | Writes the key | The `storage` event |
-| `httpProvider({ url, headers, pollMs, save })` | One GET | PUT (or POST) if `save` is set | Polling with ETag and `If-None-Match` if `pollMs` is set |
+| `httpProvider({ url, headers, pollMs, save })` | One GET | PUT (or POST) if you set `save` | Polling with ETag and `If-None-Match` if you set `pollMs` |
 | `eventSourceProvider({ url, withCredentials })` | The first message | No | Each message |
 | `compositeProvider(name, providers)` | Merges the documents in order | Sends the document to each writable provider | Merges the changes |
 
@@ -176,7 +176,7 @@ Port each effect from the demo. Keep the demo values as the defaults.
 | Effect | Layer | Composite | Notes |
 |---|---|---|---|
 | `cloudEffect` | 0 | `source-over` | Value noise wobble, rise, fade in and out |
-| `chalkEffect` | 10 | `source-over` | Feather layers, taper, smoothing, maximum length, vanish with drift. Emits `burst`. |
+| `chalkEffect` | 10 | `source-over` | Feather layers, taper, smooth curves, maximum length, vanish with drift. Emits `burst`. |
 | `glitterEffect` | 20 | `lighter` | Twinkle, rotation, gravity, friction. Listens for `burst`. |
 
 1. The glitter sprite comes from the paths in `src/effects/glow_mask.reference.svg`. The author of the demo made this file. Copy the two path strings into the source code. Draw each path with `Path2D` and `shadowBlur`. Do not use `ctx.filter`, because Safari before version 18 does not support it. The result is two sprites with the correct aspect ratio. Each particle selects one sprite at random.
@@ -196,9 +196,9 @@ Port each effect from the demo. Keep the demo values as the defaults.
 
 1. The plugin is optional.
 2. In `glow` mode (the default), the native cursor stays. The plugin adds a glow that follows the pointer.
-3. In `replace` mode, the plugin hides the native cursor and shows the arrow. Over interactive elements and `ignoreSelector`, the native cursor comes back.
+3. In `replace` mode, the plugin hides the native cursor and shows the arrow. Over interactive elements and `ignoreSelector`, the native cursor shows again.
 4. The option `render(element)` replaces the arrow.
-5. The plugin hides the cursor for touch input and when the pointer goes out of the window.
+5. The plugin hides the cursor for touch input and when the pointer leaves the window.
 
 ### 10.2 Settings panel (`magic-cursor-wand/panel`)
 
@@ -227,7 +227,7 @@ Port each effect from the demo. Keep the demo values as the defaults.
 
 ### 11.1 Code
 
-1. Write clean and self-documenting code. Do not write comments that tell what the code does.
+1. Write clean code that documents itself. Do not write comments that tell what the code does.
 2. Exception: write TSDoc on each exported symbol. The summary is one STE sentence. Add `@param`, `@returns` and `@example` if they help.
 3. `tsconfig.json` uses `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` and `isolatedDeclarations`. Give explicit return types to exported functions.
 4. Biome does the lint and the format.
@@ -242,7 +242,7 @@ Port each effect from the demo. Keep the demo values as the defaults.
 
 ### 11.3 Documentation
 
-1. Write all prose in STE: README, CONTRIBUTING, PLAN, `docs/`, TSDoc and runtime messages.
+1. Write all prose in STE: `README.md`, `CONTRIBUTING.md`, `PLAN.md`, `docs/`, TSDoc and runtime messages.
 2. Vale lints the prose with the project style `STE` in `.vale/styles/STE`. An error stops CI.
 3. The STE style checks:
    - Sentence length: at most 20 words in a procedure, at most 25 words in a description.
@@ -252,12 +252,12 @@ Port each effect from the demo. Keep the demo values as the defaults.
    - The glossary of approved technical names.
    - A list of substitutions for words that STE does not approve.
 4. The ASD-STE100 dictionary has a copyright. Do not copy it into the repository. A pull request checklist covers the rules that Vale cannot check.
-5. The documentation site uses VitePress in `docs/`. It has these parts: Getting started, Concepts, How-to, Reference, Troubleshooting. A how-to page contains one procedure.
+5. The documentation site uses VitePress in `docs/`. It has these parts: Get started, Concepts, How-to, Reference, Troubleshooting. A how-to page contains one procedure.
 6. TypeDoc with `typedoc-plugin-markdown` makes the API reference. A script makes the configuration tables from the schema metadata.
 7. Code samples are in `docs/snippets/*.ts`. CI compiles them. The pages include them with `<<< @/snippets/file.ts#region`. An inline code block has at most 3 lines.
 8. The documentation is in English only.
 
-### 11.4 Tooling and release
+### 11.4 Tools and release
 
 1. Use pnpm.
 2. GitHub Actions run these checks: typecheck, lint, prose lint, tests (Node and browser), build, publint, attw, size-limit and snippet compilation.
