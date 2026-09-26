@@ -29,8 +29,6 @@
 createWand();
 ```
 
-Visitors move the pointer and see soft clouds. They push the button and draw with chalk. They release the button, and the chalk changes into glitter. Your page continues to receive all clicks.
-
 [![The demo page with a chalk line and the settings panel](https://www.estacouveflor.com/magic-cursor-wand/demo.jpg)](https://www.estacouveflor.com/magic-cursor-wand/examples/)
 
 ## Why use it
