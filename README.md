@@ -119,3 +119,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md).
 ## License
 
 MIT
+
+## Author
+
+I write about this library and my other projects on [my blog](https://www.estacouveflor.com).
