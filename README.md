@@ -62,8 +62,8 @@ Add this element to the end of the `body` element. No bundler is necessary:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/npm/magic-cursor-wand@0.1.0/dist/magic-cursor-wand.iife.js"
-  integrity="sha384-CVksk8mhd/TzobgPnt6yBZz4uBXE/TrP9yr00gSF6aqvPTGXCcZrUB4ezZ7kYf3o"
+  src="https://cdn.jsdelivr.net/npm/magic-cursor-wand@0.2.0/dist/magic-cursor-wand.iife.js"
+  integrity="sha384-XxBXqYPuFEcQp51OYVOK/CslqB4ooezSzEvohIGISSD4E7Gxi3IOg09R3e/wKmF5"
   crossorigin="anonymous"
   data-wand-storage-key="my-site-wand"
   data-wand-cursor="glow"

@@ -38,18 +38,24 @@ jobs:
           publish: pnpm release
           commit: 'chore: release'
           title: 'chore: release'
-          createGithubReleases: true
+          createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: 'true'
-      - name: Pin the script tag examples to the new version
-        if: steps.changesets.outputs.published == true
+      - name: Tag, release and pin the published version
+        if: steps.changesets.outputs.hasChangesets == false
         run: |
+          version=$(node -p "require(./package.json).version")
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" > /dev/null; then exit 0; fi
+          if ! npm view "magic-cursor-wand@$version" version > /dev/null 2>&1; then exit 0; fi
+          node --experimental-strip-types scripts/release-notes.ts "$version" > release-notes.md
+          gh release create "v$version" --target "$GITHUB_SHA" --title "v$version" --notes-file release-notes.md
+          rm release-notes.md
           pnpm docs:integrity
           if git diff --quiet; then exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "docs: pin the script tag examples to the new version"
+          git commit -am "docs: pin the script tag examples to v$version"
           git push
           gh workflow run pages.yml --ref main
         env:
