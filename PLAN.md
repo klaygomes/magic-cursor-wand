@@ -43,6 +43,7 @@ The shared types are in `src/config/types.ts` and `src/core/types.ts`. Do not ch
 5. During a stroke, the engine sets `user-select: none` on the root element. At the end of the stroke, the engine restores the previous value.
 6. Touch input in overlay mode:
    - Touch input must not stop the page scroll.
+   - If the touch starts on an element with `touch-action: none`, or in such an element, the browser does not scroll. The engine then makes a full stroke from the touch.
    - A tap emits a `burst` event and makes a short chalk dot.
    - On `pointercancel`, the engine ends the stroke without an error.
 7. Touch input in container mode: the engine sets `touch-action: none` on the target. The option `touchAction` changes this value.
@@ -284,3 +285,4 @@ Port each effect from the demo. Keep the demo values as the defaults.
 | 2026-09-27 | New default values: theme color `#fad30b`, motion `full`, maximum pixel ratio 1.5, and new values for the cloud, chalk and glitter effects. The owner of the project selected them in the settings panel. Sites that must obey `prefers-reduced-motion` set `theme.motion` to `auto`. |
 | 2026-09-27 | The panel plugin has the options `expanded` and `closable`. The script tag build accepts `data-wand-panel`, `data-wand-panel-container` and `data-wand-panel-expanded`. |
 | 2026-09-27 | The input sends pointer events to the plugins also when the effects stop. Thus the cursor plugin shows the pointer when the motion is `off`. |
+| 2026-09-27 | In overlay mode, a touch on an element with `touch-action: none` makes a full stroke. The page owner selects the areas where a finger draws. |

@@ -74,6 +74,14 @@ interface TapCandidate {
   readonly drawing: boolean;
 }
 
+function panningDisabled(target: EventTarget | null): boolean {
+  if (typeof getComputedStyle !== 'function') return false;
+  for (let node = target instanceof Element ? target : null; node; node = node.parentElement) {
+    if (getComputedStyle(node).touchAction === 'none') return true;
+  }
+  return false;
+}
+
 /**
  * Attaches the pointer listeners and converts the events to `WandPointerEvent` objects.
  *
@@ -111,6 +119,9 @@ export function createInput(options: InputOptions): Input {
     savedUserSelect = undefined;
   };
 
+  const touchScrollsPage = (event: PointerEvent): boolean =>
+    overlay && event.pointerType === 'touch' && !panningDisabled(event.target);
+
   const shouldDraw = (event: PointerEvent): boolean => {
     if (options.ignoreSelector && closest(event.target, options.ignoreSelector)) return false;
     try {
@@ -147,7 +158,7 @@ export function createInput(options: InputOptions): Input {
     if (activeId !== undefined) return;
     const point = surface.toDocument(event.clientX, event.clientY);
     const startsStroke = options.canDraw() && shouldDraw(event);
-    if (overlay && event.pointerType === 'touch') {
+    if (touchScrollsPage(event)) {
       tap = {
         id: event.pointerId,
         x: point.x,
@@ -173,7 +184,7 @@ export function createInput(options: InputOptions): Input {
   };
 
   const onMove = (event: PointerEvent): void => {
-    if (overlay && event.pointerType === 'touch') return;
+    if (overlay && event.pointerType === 'touch' && event.pointerId !== activeId) return;
     if (activeId !== undefined && event.pointerId !== activeId) return;
     hover = true;
     const samples = samplesOf(event);

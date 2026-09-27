@@ -30,7 +30,7 @@ The canvas size is the CSS size multiplied by the device pixel ratio. The field 
 
 | Mode | Behavior |
 |---|---|
-| Overlay | Touch input does not stop the page scroll. A tap makes a burst of glitter. If `shouldDraw` accepts the tap, the tap also makes a short chalk dot. |
+| Overlay | Touch input does not stop the page scroll. A tap makes a burst of glitter. If `shouldDraw` accepts the tap, the tap also makes a short chalk dot. On an element with `touch-action: none`, or in an element with this value, a finger draws a full chalk line. |
 | Container | The wand sets `touch-action: none` on the target. The option `touchAction` changes this value. |
 
 ## Chalk strokes

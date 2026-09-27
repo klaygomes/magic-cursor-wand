@@ -253,6 +253,7 @@ main {
 
 .slate {
   position: relative;
+  touch-action: none;
   aspect-ratio: 4 / 3;
   margin: 0;
   border-radius: var(--radius-surface);

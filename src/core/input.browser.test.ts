@@ -153,6 +153,23 @@ describe('pointer input', () => {
     expect(effect.pointers[0]).toMatchObject({ phase: 'tap', drawing: true, pointerType: 'touch' });
   });
 
+  it('draws with overlay touch input where the page turns off the touch scroll', () => {
+    const pad = attach(document.createElement('div'));
+    pad.style.touchAction = 'none';
+    const inner = pad.appendChild(document.createElement('span'));
+    const effect = fakeEffect('fx');
+    wandOf(createTestWand({ effects: [effect], scheduler: createManualScheduler() }));
+    fire(inner, 'pointerdown', { pointerId: 9, pointerType: 'touch', clientX: 10, clientY: 10 });
+    fire(inner, 'pointermove', { pointerId: 9, pointerType: 'touch', clientX: 40, clientY: 10 });
+    fire(inner, 'pointerup', { pointerId: 9, pointerType: 'touch', clientX: 40, clientY: 10 });
+    expect(effect.pointers.map((event) => [event.phase, event.drawing])).toEqual([
+      ['down', true],
+      ['move', true],
+      ['up', true],
+    ]);
+    expect(document.documentElement.style.userSelect).toBe('');
+  });
+
   it('ends a touch without an error on pointercancel', () => {
     const plain = attach(document.createElement('div'));
     const effect = fakeEffect('fx');
