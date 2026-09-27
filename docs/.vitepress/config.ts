@@ -74,6 +74,7 @@ export default defineConfig({
         link: 'https://www.estacouveflor.com/magic-cursor-wand/examples/',
         target: '_self',
       },
+      { text: 'Blog', link: 'https://www.estacouveflor.com', target: '_self' },
     ],
     sidebar: {
       '/reference/api/': [{ text: 'API', items: apiSidebar() }],
@@ -83,6 +84,9 @@ export default defineConfig({
     search: { provider: 'local' },
     editLink: {
       pattern: 'https://github.com/klaygomes/magic-cursor-wand/edit/main/docs/:path',
+    },
+    footer: {
+      message: 'MIT licence. Made at <a href="https://www.estacouveflor.com">Esta couve flor</a>.',
     },
   },
 });
