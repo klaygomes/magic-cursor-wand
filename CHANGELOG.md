@@ -1,5 +1,15 @@
 # magic-cursor-wand
 
+## 0.3.0
+
+### Minor Changes
+
+- 330ef79: In overlay mode, a finger draws a full chalk line on an element with `touch-action: none`, or in such an element. On the rest of the page, touch input continues to scroll the page.
+
+### Patch Changes
+
+- 2a46429: The script tag build adds the cursor plugin only on a device with a pointer that can hover. On a touch device, the settings panel thus shows no cursor settings.
+
 ## 0.2.0
 
 ### Minor Changes
