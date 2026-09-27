@@ -20,7 +20,7 @@ Use this procedure to add the effects to a page without a bundler. The script bu
 | `data-wand-config-url` | Adds an HTTP provider with this URL. |
 | `data-wand-sse-url` | Adds an SSE provider with this URL. |
 | `data-wand-storage-key` | Adds a localStorage provider with this key. |
-| `data-wand-cursor` | Adds the cursor plugin in this mode: `glow` or `replace`. |
+| `data-wand-cursor` | Adds the cursor plugin in this mode: `glow` or `replace`. The build adds the plugin only on a device with a pointer that can hover, for example a mouse. |
 | `data-wand-panel-hotkey` | Adds the settings panel with this keyboard shortcut, for example `Alt+Shift+W`. |
 | `data-wand-panel` | Adds the settings panel. The value `open` opens the panel at start and removes its Close button. |
 | `data-wand-panel-container` | Puts the panel in the element that this CSS selector finds, for example `#settings`. |

@@ -3,13 +3,13 @@ import { cursorPlugin } from 'magic-cursor-wand/cursor';
 import { localStorageProvider } from 'magic-cursor-wand/providers';
 import { autoplayStroke } from './autoplay';
 import { bindCopyButtons } from './copy';
-import { dockedPanel } from './panel';
+import { dockedPanel, hasHoverPointer } from './panel';
 import { revealOnScroll } from './reveal';
 
 const panel = dockedPanel();
 
 createWand({
-  plugins: [cursorPlugin({ mode: 'replace' }), panel],
+  plugins: hasHoverPointer ? [cursorPlugin({ mode: 'replace' }), panel] : [panel],
   providers: [localStorageProvider({ key: 'magic-cursor-wand-demo-v3' })],
 });
 

@@ -39,6 +39,10 @@ export function panelPlugin(options: PanelPluginOptions = {}): PanelPlugin {
   return createPanelPlugin({ load: loadTweakpaneFromCdn, ...options });
 }
 
+function hasHoverPointer(): boolean {
+  return typeof matchMedia !== 'function' || matchMedia('(any-hover: hover)').matches;
+}
+
 function listOf(value: string | undefined): string[] | undefined {
   const items = value
     ?.split(',')
@@ -76,7 +80,7 @@ export function startFromAttributes(dataset: DOMStringMap): Wand | undefined {
   if (dataset.wandStorageKey) providers.push(localStorageProvider({ key: dataset.wandStorageKey }));
 
   const plugins: Plugin[] = [];
-  if (dataset.wandCursor !== undefined) {
+  if (dataset.wandCursor !== undefined && hasHoverPointer()) {
     plugins.push(cursorPlugin({ mode: dataset.wandCursor === 'replace' ? 'replace' : 'glow' }));
   }
   const panel = panelFromAttributes(dataset);
