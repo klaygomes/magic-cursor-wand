@@ -1,6 +1,6 @@
 {
   "name": "magic-cursor-wand",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Chalk, glitter and cloud pointer effects for the browser. Extensible effects and async configuration providers.",
   "keywords": [
     "cursor",
